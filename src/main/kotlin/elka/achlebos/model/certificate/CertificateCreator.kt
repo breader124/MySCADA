@@ -9,9 +9,9 @@ import java.security.KeyStore
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
-abstract class CertificateCreator(protected open val info: CertificateInfo,
-                                  protected val path: Path,
-                                  protected val password: String) {
+abstract class AbstractCertificateCreator(protected open val info: CertificateInfo,
+                                          protected val path: Path,
+                                          protected val password: String) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
     abstract val certificate: Certificate
     abstract val keyPair: KeyPair
@@ -20,11 +20,11 @@ abstract class CertificateCreator(protected open val info: CertificateInfo,
     protected abstract fun create(): Certificate
 }
 
-class X509CertificateCreator(
+class X509AbstractCertificateCreator(
         override val info: X509CertificateInfo,
-        password: String,
-        path: Path
-) : CertificateCreator(info, path, password) {
+        path: Path,
+        password: String
+) : AbstractCertificateCreator(info, path, password) {
 
     override val certificate: X509Certificate by lazy { create() }
     override lateinit var keyPair: KeyPair
@@ -41,11 +41,11 @@ class X509CertificateCreator(
     @Throws(CertificateCreationException::class)
     private fun storeCertificate(certificate: X509Certificate, keyPair: KeyPair) {
         val passwordChars = password.toCharArray()
+        val certName = path.fileName.toString()
         keyStore.load(null, passwordChars)
-        keyStore.setKeyEntry(CERT_NAME, keyPair.private, passwordChars, arrayOf(certificate))
+        keyStore.setKeyEntry(certName, keyPair.private, passwordChars, arrayOf(certificate))
         try {
-            val keyStorePath: Path = path.resolve(CERT_NAME)
-            val outputStream = Files.newOutputStream(keyStorePath)
+            val outputStream = Files.newOutputStream(path)
             keyStore.store(outputStream, passwordChars)
         } catch (exc: IOException) {
             throw CertificateCreationException(exc.localizedMessage ?: "")

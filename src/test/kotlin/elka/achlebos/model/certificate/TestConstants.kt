@@ -14,5 +14,7 @@ internal val info = X509CertificateInfo(
         dnsNames = listOf("first", "second", "third"),
         ipAddresses = listOf("192.168.0.1", "224.123.123.123")
 )
-internal val path = Paths.get(".")
+internal const val certName = "example"
 internal const val password = "password"
+
+internal val path = Paths.get(".", certName)

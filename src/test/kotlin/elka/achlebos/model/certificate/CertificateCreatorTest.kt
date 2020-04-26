@@ -9,25 +9,23 @@ import java.nio.file.Paths
 import java.security.cert.X509Certificate
 
 @Tag("unitTest")
-class X509CertificateCreatorTest {
+class X509AbstractCertificateCreatorTest {
     companion object {
         @AfterAll
         @JvmStatic
         internal fun cleanup() {
-            val certPath = Paths.get("./$CERT_NAME")
-            Files.deleteIfExists(certPath)
+            Files.deleteIfExists(path)
         }
     }
 
-    private val creator = X509CertificateCreator(info, password, path)
+    private val creator = X509AbstractCertificateCreator(info, path, password)
 
     @Test
     fun createCertificateTest() {
         // when
         val certificate: X509Certificate = creator.certificate
         // then
-        val certPath = Paths.get(path.toString(), CERT_NAME)
-        assertThat(Files.exists(certPath)).isTrue()
+        assertThat(Files.exists(path)).isTrue()
     }
 
     @Test

@@ -8,15 +8,18 @@ import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
-abstract class CertificateLoader(protected val path: Path, protected val password: String) {
+abstract class AbstractCertificateLoader(protected val path: Path, protected val password: String) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
+    protected val certName = path.fileName.toString()
+
     abstract val certificate: Certificate
     abstract val keyPair: KeyPair
 
+    @Throws(CertificateLoadingException::class)
     protected abstract fun loadCertificate(): Certificate
 }
 
-class X509CertificateLoader(path: Path, password: String) : CertificateLoader(path, password) {
+class X509AbstractCertificateLoader(path: Path, password: String) : AbstractCertificateLoader(path, password) {
 
     override val certificate: Certificate by lazy { loadCertificate() }
     override val keyPair: KeyPair by lazy { loadKeyPair() }
@@ -26,11 +29,12 @@ class X509CertificateLoader(path: Path, password: String) : CertificateLoader(pa
     }
 
     override fun loadCertificate(): X509Certificate {
-        return keyStore.getCertificate(CERT_NAME) as X509Certificate
+        return keyStore.getCertificate(certName) as X509Certificate
     }
 
+    @Throws(CertificateLoadingException::class)
     private fun loadKeyPair(): KeyPair {
-        val privateKey = keyStore.getKey(CERT_NAME, password.toCharArray())
+        val privateKey = keyStore.getKey(certName, password.toCharArray())
         val publicKey = certificate.publicKey
         return KeyPair(publicKey, privateKey as PrivateKey)
     }
@@ -39,8 +43,7 @@ class X509CertificateLoader(path: Path, password: String) : CertificateLoader(pa
     private fun initializeKeyStore() {
         val passwordChars = password.toCharArray()
         try {
-            val certPath = path.resolve(CERT_NAME)
-            val inputStream = Files.newInputStream(certPath)
+            val inputStream = Files.newInputStream(path)
             keyStore.load(inputStream, passwordChars)
         } catch (exc: Exception) {
             throw CertificateLoadingException(exc.localizedMessage)

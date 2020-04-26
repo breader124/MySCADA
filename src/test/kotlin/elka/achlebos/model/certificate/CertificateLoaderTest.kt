@@ -9,18 +9,17 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @Tag("unitTest")
-class X509CertificateLoaderTest {
+class X509AbstractCertificateLoaderTest {
     companion object {
         @AfterAll
         @JvmStatic
         internal fun cleanup() {
-            val certPath = Paths.get("./$CERT_NAME")
-            Files.deleteIfExists(certPath)
+            Files.deleteIfExists(path)
         }
     }
 
-    private val certificate = X509CertificateCreator(info, password, path).certificate
-    private val loader = X509CertificateLoader(path, password)
+    private val certificate = X509AbstractCertificateCreator(info, path, password).certificate
+    private val loader = X509AbstractCertificateLoader(path, password)
 
     @Test
     fun loadCertificateTest() {
@@ -36,7 +35,7 @@ class X509CertificateLoaderTest {
         val path = Paths.get("exampleWrongPath")
         // when
         assertThatThrownBy {
-            X509CertificateLoader(path, password)
+            X509AbstractCertificateLoader(path, password)
         }.isInstanceOf(CertificateLoadingException::class.java)
     }
 
@@ -46,7 +45,7 @@ class X509CertificateLoaderTest {
         val wrongPassword = "wrongPassword"
         // when
         assertThatThrownBy {
-            X509CertificateLoader(path, wrongPassword)
+            X509AbstractCertificateLoader(path, wrongPassword)
         }.isInstanceOf(CertificateLoadingException::class.java)
     }
 
