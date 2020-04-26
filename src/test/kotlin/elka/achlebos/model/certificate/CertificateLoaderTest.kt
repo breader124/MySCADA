@@ -9,7 +9,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @Tag("unitTest")
-class X509AbstractCertificateLoaderTest {
+class X509CertificateLoaderTest {
     companion object {
         @AfterAll
         @JvmStatic
@@ -18,8 +18,8 @@ class X509AbstractCertificateLoaderTest {
         }
     }
 
-    private val certificate = X509AbstractCertificateCreator(info, path, password).certificate
-    private val loader = X509AbstractCertificateLoader(path, password)
+    private val certificate = X509CertificateCreator(info, path, password).certificate
+    private val loader = X509CertificateLoader(path, password)
 
     @Test
     fun loadCertificateTest() {
@@ -35,7 +35,7 @@ class X509AbstractCertificateLoaderTest {
         val path = Paths.get("exampleWrongPath")
         // when
         assertThatThrownBy {
-            X509AbstractCertificateLoader(path, password)
+            X509CertificateLoader(path, password)
         }.isInstanceOf(CertificateLoadingException::class.java)
     }
 
@@ -45,7 +45,7 @@ class X509AbstractCertificateLoaderTest {
         val wrongPassword = "wrongPassword"
         // when
         assertThatThrownBy {
-            X509AbstractCertificateLoader(path, wrongPassword)
+            X509CertificateLoader(path, wrongPassword)
         }.isInstanceOf(CertificateLoadingException::class.java)
     }
 

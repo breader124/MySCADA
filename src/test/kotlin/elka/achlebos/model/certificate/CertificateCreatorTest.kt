@@ -5,11 +5,10 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
-import java.nio.file.Paths
 import java.security.cert.X509Certificate
 
 @Tag("unitTest")
-class X509AbstractCertificateCreatorTest {
+class X509CertificateCreatorTest {
     companion object {
         @AfterAll
         @JvmStatic
@@ -18,7 +17,7 @@ class X509AbstractCertificateCreatorTest {
         }
     }
 
-    private val creator = X509AbstractCertificateCreator(info, path, password)
+    private val creator = X509CertificateCreator(info, path, password)
 
     @Test
     fun createCertificateTest() {

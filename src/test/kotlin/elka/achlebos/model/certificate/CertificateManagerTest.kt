@@ -7,7 +7,7 @@ import java.nio.file.Files
 
 @Tag("unitTest")
 class CertificateManagerTest {
-    private val creator = X509AbstractCertificateCreator(info, path, password)
+    private val creator = X509CertificateCreator(info, path, password)
 
     @Test
     fun remoteCertificateTest() {

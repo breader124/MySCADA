@@ -20,7 +20,7 @@ abstract class AbstractCertificateCreator(protected open val info: CertificateIn
     protected abstract fun create(): Certificate
 }
 
-class X509AbstractCertificateCreator(
+class X509CertificateCreator(
         override val info: X509CertificateInfo,
         path: Path,
         password: String

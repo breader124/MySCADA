@@ -6,29 +6,33 @@ import java.security.KeyPair
 import java.security.cert.Certificate
 
 abstract class CertificateManager(protected val password: String) {
-    protected abstract val creatorAbstract: AbstractCertificateCreator
-    protected abstract val loaderAbstract: AbstractCertificateLoader
+    protected abstract val creator: AbstractCertificateCreator
+    protected abstract val loader: AbstractCertificateLoader
 
+    @Throws(CertificateCreationException::class)
     abstract fun create(certificateInfo: CertificateInfo, path: Path): Pair<Certificate, KeyPair>
+
+    @Throws(CertificateLoadingException::class)
     abstract fun load(path: Path): Pair<Certificate, KeyPair>
+
     abstract fun remove(path: Path)
 }
 
 class X509CertificateManager(password: String): CertificateManager(password) {
-    override lateinit var creatorAbstract: X509AbstractCertificateCreator
-    override lateinit var loaderAbstract: X509AbstractCertificateLoader
+    override lateinit var creator: X509CertificateCreator
+    override lateinit var loader: X509CertificateLoader
 
     @Throws(CertificateCreationException::class)
     override fun create(certificateInfo: CertificateInfo, path: Path): Pair<Certificate, KeyPair> {
         val info = certificateInfo as X509CertificateInfo
-        creatorAbstract = X509AbstractCertificateCreator(info, path, password)
-        return Pair(creatorAbstract.certificate, creatorAbstract.keyPair)
+        creator = X509CertificateCreator(info, path, password)
+        return Pair(creator.certificate, creator.keyPair)
     }
 
     @Throws(CertificateLoadingException::class)
     override fun load(path: Path): Pair<Certificate, KeyPair> {
-        loaderAbstract = X509AbstractCertificateLoader(path, password)
-        return Pair(loaderAbstract.certificate, loaderAbstract.keyPair)
+        loader = X509CertificateLoader(path, password)
+        return Pair(loader.certificate, loader.keyPair)
     }
 
     override fun remove(path: Path) {

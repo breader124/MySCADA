@@ -19,7 +19,7 @@ abstract class AbstractCertificateLoader(protected val path: Path, protected val
     protected abstract fun loadCertificate(): Certificate
 }
 
-class X509AbstractCertificateLoader(path: Path, password: String) : AbstractCertificateLoader(path, password) {
+class X509CertificateLoader(path: Path, password: String) : AbstractCertificateLoader(path, password) {
 
     override val certificate: Certificate by lazy { loadCertificate() }
     override val keyPair: KeyPair by lazy { loadKeyPair() }
