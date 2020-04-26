@@ -8,7 +8,7 @@ import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
-abstract class CertificateLoader(val path: Path, val password: String) {
+abstract class CertificateLoader(protected val path: Path, protected val password: String) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
     abstract val certificate: Certificate
     abstract val keyPair: KeyPair
