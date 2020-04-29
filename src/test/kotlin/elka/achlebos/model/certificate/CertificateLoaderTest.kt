@@ -1,5 +1,6 @@
 package elka.achlebos.model.certificate
 
+import elka.achlebos.model.CertificateLoadingException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterAll

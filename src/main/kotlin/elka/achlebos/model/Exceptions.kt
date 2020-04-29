@@ -1,4 +1,4 @@
-package elka.achlebos.model.certificate
+package elka.achlebos.model
 
 import java.lang.Exception
 

@@ -1,5 +1,6 @@
 package elka.achlebos.model.certificate
 
+import elka.achlebos.model.CertificateLoadingException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.KeyPair

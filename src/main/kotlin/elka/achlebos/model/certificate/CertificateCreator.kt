@@ -1,5 +1,6 @@
 package elka.achlebos.model.certificate
 
+import elka.achlebos.model.CertificateCreationException
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator
 import java.io.IOException
 import java.nio.file.Files
