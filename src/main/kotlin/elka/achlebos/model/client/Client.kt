@@ -1,13 +1,9 @@
 package elka.achlebos.model.client
 
 import elka.achlebos.model.data.AddressSpaceCatalogue
-import org.eclipse.milo.opcua.sdk.client.api.AddressSpace
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient
+import org.eclipse.milo.opcua.stack.core.Identifiers
 
-class Client(rootNode: Node, val addressSpace: AddressSpace) {
-    val rootCatalogue = AddressSpaceCatalogue(rootNode)
-
-    fun browseCatalogue(catalogue: AddressSpaceCatalogue) {
-        TODO()
-    }
+class Client(opcUaClient: OpcUaClient) {
+    val rootCatalogue = AddressSpaceCatalogue(Identifiers.RootFolder, opcUaClient)
 }
