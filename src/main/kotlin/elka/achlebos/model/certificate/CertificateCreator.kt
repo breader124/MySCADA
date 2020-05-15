@@ -11,8 +11,7 @@ import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
 abstract class AbstractCertificateCreator(protected open val info: CertificateInfo,
-                                          protected val path: Path,
-                                          protected val password: String) {
+                                          protected val path: Path) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
     abstract val certificate: Certificate
     abstract val keyPair: KeyPair
@@ -23,9 +22,8 @@ abstract class AbstractCertificateCreator(protected open val info: CertificateIn
 
 class X509CertificateCreator(
         override val info: X509CertificateInfo,
-        path: Path,
-        password: String
-) : AbstractCertificateCreator(info, path, password) {
+        path: Path
+) : AbstractCertificateCreator(info, path) {
 
     override val certificate: X509Certificate by lazy { create() }
     override lateinit var keyPair: KeyPair
@@ -41,7 +39,7 @@ class X509CertificateCreator(
 
     @Throws(CertificateCreationException::class)
     private fun storeCertificate(certificate: X509Certificate, keyPair: KeyPair) {
-        val passwordChars = password.toCharArray()
+        val passwordChars = info.password.toCharArray()
         val certName = path.fileName.toString()
         keyStore.load(null, passwordChars)
         keyStore.setKeyEntry(certName, keyPair.private, passwordChars, arrayOf(certificate))

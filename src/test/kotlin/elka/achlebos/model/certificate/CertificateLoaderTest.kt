@@ -19,8 +19,8 @@ class X509CertificateLoaderTest {
         }
     }
 
-    private val certificate = X509CertificateCreator(info, path, password).certificate
-    private val loader = X509CertificateLoader(path, password)
+    private val certificate = X509CertificateCreator(info, path).certificate
+    private val loader = X509CertificateLoader(password, path)
 
     @Test
     fun loadCertificateTest() {
@@ -36,7 +36,7 @@ class X509CertificateLoaderTest {
         val path = Paths.get("exampleWrongPath")
         // when
         assertThatThrownBy {
-            X509CertificateLoader(path, password)
+            X509CertificateLoader(password, path)
         }.isInstanceOf(CertificateLoadingException::class.java)
     }
 
@@ -46,7 +46,7 @@ class X509CertificateLoaderTest {
         val wrongPassword = "wrongPassword"
         // when
         assertThatThrownBy {
-            X509CertificateLoader(path, wrongPassword)
+            X509CertificateLoader(wrongPassword, path)
         }.isInstanceOf(CertificateLoadingException::class.java)
     }
 

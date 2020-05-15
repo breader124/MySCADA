@@ -21,8 +21,8 @@ class Connection(private val serverUri: String) {
                              certificatePath: Path,
                              certPassword: String): CompletableFuture<UaClient>  {
 
-        val certificateManager = X509CertificateManager(certPassword)
-        val (cert, keyPair) = certificateManager.load(certificatePath)
+        val certificateManager = X509CertificateManager()
+        val (cert, keyPair) = certificateManager.load(certPassword, certificatePath)
 
         val config = OpcUaClientConfig.builder()
                 .setEndpoint(endpoint)

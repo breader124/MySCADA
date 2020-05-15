@@ -9,7 +9,7 @@ import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
-abstract class AbstractCertificateLoader(protected val path: Path, protected val password: String) {
+abstract class AbstractCertificateLoader(protected val password: String, protected val path: Path) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
     protected val certName = path.fileName.toString()
 
@@ -20,7 +20,7 @@ abstract class AbstractCertificateLoader(protected val path: Path, protected val
     protected abstract fun loadCertificate(): Certificate
 }
 
-class X509CertificateLoader(path: Path, password: String) : AbstractCertificateLoader(path, password) {
+class X509CertificateLoader(password: String, path: Path) : AbstractCertificateLoader(password, path) {
 
     override val certificate: Certificate by lazy { loadCertificate() }
     override val keyPair: KeyPair by lazy { loadKeyPair() }

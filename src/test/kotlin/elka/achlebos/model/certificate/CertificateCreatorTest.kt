@@ -17,7 +17,7 @@ class X509CertificateCreatorTest {
         }
     }
 
-    private val creator = X509CertificateCreator(info, path, password)
+    private val creator = X509CertificateCreator(info, path)
 
     @Test
     fun createCertificateTest() {
