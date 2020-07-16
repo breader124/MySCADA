@@ -97,7 +97,7 @@ class CertificateCreationFragment : Fragment("Certificate Creator") {
                 field("Application URI") {
                     textfield(infoModel.applicationUri)
                 }
-                field("Validity time") {
+                field("Valid until") {
                     datepicker(infoModel.pickedDate).setOnAction {
                         infoModel.setPeriod()
                     }

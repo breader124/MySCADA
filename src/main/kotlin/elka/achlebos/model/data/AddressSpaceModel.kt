@@ -21,7 +21,7 @@ abstract class AddressSpaceComponent(protected open val nodeId: NodeId,
     }
 
     open fun browse(): CompletableFuture<BrowseResult> {
-        throw java.lang.UnsupportedOperationException("Cannot browse")
+        throw UnsupportedOperationException("Cannot browse")
     }
 
     open fun readValue(): CompletableFuture<DataValue> {
