@@ -8,10 +8,8 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import tornadofx.*
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import javax.swing.GroupLayout
 
 class CertificateCreatedEvent : FXEvent()
 
@@ -33,7 +31,7 @@ class CertificateManagerView : View("Certificate Manager") {
 
         bottom = buttonbar {
             button("Load").setOnAction {
-                TODO("Loading certificate")
+                TODO("Choose a file containing certificate")
             }
             button("Create").setOnAction {
                 openInternalWindow(CertificateCreationFragment())
