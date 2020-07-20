@@ -2,11 +2,15 @@ package elka.achlebos.view
 
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
-import elka.achlebos.viewmodel.CertificateInfoViewModel
 import elka.achlebos.viewmodel.CertificateCreationViewModel
+import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
+import javafx.stage.StageStyle
 import tornadofx.*
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class CertificateCreationView : View("Certificate Creator") {
     private val certificateCreationModel: CertificateCreationViewModel by inject()
@@ -88,17 +92,20 @@ class CertificateCreationView : View("Certificate Creator") {
                     infoModel.commit()
 
                     val certInfo = infoModel.item
-                    val destinationFile = chooseFile(
-                            title = "Create new file to store your certificate",
-                            filters = emptyArray(),
-                            mode = FileChooserMode.Single
-                    )
+                    certInfo.dnsNames = domainNames
+                    certInfo.ipAddresses = ipAddresses
 
-                    destinationFile.firstOrNull()?.also {
-                        certificateCreationModel.createCertificate(certInfo, it.toPath())
+                    val destinationDir = chooseDirectory("Choose directory to store new certificate")
+                    destinationDir?.also {
+                        try {
+                            val newCertPath = Files.createFile(Paths.get(it.toString(), certInfo.commonName))
+                            certificateCreationModel.createCertificate(certInfo, newCertPath)
+
+                            close()
+                        } catch (exc: IOException) {
+                            find<InfoDialog>().openModal(stageStyle = StageStyle.UTILITY)
+                        }
                     }
-
-                    close()
                 }
             }
         }

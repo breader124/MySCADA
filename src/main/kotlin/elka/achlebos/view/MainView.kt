@@ -10,7 +10,7 @@ class MainView : View("MySCADA") {
                     openInternalWindow<CertificateCreationView>()
                 }
                 item("Remove").action {
-                    println("Certificate removed")
+
                 }
             }
         }
