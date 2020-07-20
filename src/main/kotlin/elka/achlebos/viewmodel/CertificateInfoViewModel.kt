@@ -7,21 +7,21 @@ import java.time.LocalDate
 import java.time.Period
 
 class CertificateInfoViewModel : ItemViewModel<X509CertificateInfo>() {
-    val password = bind(X509CertificateInfo::password)
-    val commonName = bind(X509CertificateInfo::commonName)
-    val organization = bind(X509CertificateInfo::organization)
-    val organizationalUnit = bind(X509CertificateInfo::organizationalUnit)
-    val localityName = bind(X509CertificateInfo::localityName)
-    val countryCode = bind(X509CertificateInfo::countryCode)
-    val applicationUri = bind(X509CertificateInfo::applicationUri)
+    val password = bind(X509CertificateInfo::passwordProperty)
+    val commonName = bind(X509CertificateInfo::commonNameProperty)
+    val organization = bind(X509CertificateInfo::organizationProperty)
+    val organizationalUnit = bind(X509CertificateInfo::organizationalUnitProperty)
+    val localityName = bind(X509CertificateInfo::localityNameProperty)
+    val countryCode = bind(X509CertificateInfo::countryCodeProperty)
+    val applicationUri = bind(X509CertificateInfo::applicationUriProperty)
 
-    private val validityPeriod = bind(X509CertificateInfo::validityPeriod)
+    private val validityPeriod = bind(X509CertificateInfo::validityPeriodProperty)
     val pickedDate = SimpleObjectProperty<LocalDate>()
 
-    private val dnsNamesProperty = bind(X509CertificateInfo::dnsNames)
+    private val dnsNamesProperty = bind(X509CertificateInfo::dnsNamesProperty)
     val dnsNames: List<String> by dnsNamesProperty
 
-    private val ipAddressesProperty = bind(X509CertificateInfo::ipAddresses)
+    private val ipAddressesProperty = bind(X509CertificateInfo::ipAddressesProperty)
     val ipAddresses: List<String> by ipAddressesProperty
 
     fun setPeriod() {

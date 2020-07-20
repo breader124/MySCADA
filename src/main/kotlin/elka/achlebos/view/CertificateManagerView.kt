@@ -3,65 +3,13 @@ package elka.achlebos.view
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
 import elka.achlebos.viewmodel.CertificateInfoViewModel
-import elka.achlebos.viewmodel.CertificateManagerViewModel
-import javafx.beans.property.SimpleObjectProperty
+import elka.achlebos.viewmodel.CertificateCreationViewModel
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import tornadofx.*
-import java.nio.file.Path
-import java.nio.file.Paths
 
-class CertificateCreatedEvent : FXEvent()
-
-class CertificateManagerView : View("Certificate Manager") {
-    private val viewModel: CertificateManagerViewModel by inject()
-
-    private val certificates = mutableListOf<Path>().asObservable()
-    private val listSelected = SimpleObjectProperty<Path>()
-
-    init {
-        viewModel.item = X509CertificateManager()
-        refreshExistingCertificates()
-    }
-
-    override val root = borderpane {
-        center = listview(certificates) {
-            bindSelected(listSelected)
-        }
-
-        bottom = buttonbar {
-            button("Load").setOnAction {
-                TODO("Choose a file containing certificate")
-            }
-            button("Create").setOnAction {
-                openInternalWindow(CertificateCreationFragment())
-            }
-            button("Remove").setOnAction {
-                viewModel.removeCertificate(listSelected.value)
-                refreshExistingCertificates()
-            }
-        }
-
-        subscribe<CertificateCreatedEvent> {
-            refreshExistingCertificates()
-        }
-    }
-
-    private fun refreshExistingCertificates() {
-        val here = Paths.get(".")
-        val filesHere = viewModel.listCertificates(here)
-
-        certificates.removeIf { elem -> !filesHere.contains(elem) }
-        filesHere.forEach {
-            if (!certificates.contains(it)) {
-                certificates.add(it)
-            }
-        }
-    }
-}
-
-class CertificateCreationFragment : Fragment("Certificate Creator") {
-    private val certificateManagerModel: CertificateManagerViewModel by inject()
+class CertificateCreationView : View("Certificate Creator") {
+    private val certificateCreationModel: CertificateCreationViewModel by inject()
     private val infoModel: CertificateInfoViewModel by inject()
 
     private val domainNames = infoModel.dnsNames.asObservable()
@@ -71,6 +19,7 @@ class CertificateCreationFragment : Fragment("Certificate Creator") {
     private val newIpAddress = SimpleStringProperty()
 
     init {
+        certificateCreationModel.item = X509CertificateManager()
         infoModel.item = X509CertificateInfo()
     }
 
@@ -136,16 +85,17 @@ class CertificateCreationFragment : Fragment("Certificate Creator") {
             }
             buttonbar {
                 button("Save").setOnAction {
-                    runAsync {
-                        infoModel.commit()
-                        val certInfo = infoModel.item
+                    infoModel.commit()
 
-//                        TODO("Certificate should have its own name")
-                        val here = Paths.get(".", "cert")
+                    val certInfo = infoModel.item
+                    val destinationFile = chooseFile(
+                            title = "Create new file to store your certificate",
+                            filters = emptyArray(),
+                            mode = FileChooserMode.Single
+                    )
 
-                        certificateManagerModel.createCertificate(certInfo, here)
-                    } ui {
-                        fire(CertificateCreatedEvent())
+                    destinationFile.firstOrNull()?.also {
+                        certificateCreationModel.createCertificate(certInfo, it.toPath())
                     }
 
                     close()

@@ -8,7 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.streams.toList
 
-class CertificateManagerViewModel: ItemViewModel<X509CertificateManager>() {
+class CertificateCreationViewModel: ItemViewModel<X509CertificateManager>() {
     fun listCertificates(path: Path): ObservableList<Path> = Files.list(path)
                 .filter { filePath -> Files.isRegularFile(filePath) }
                 .toList()
