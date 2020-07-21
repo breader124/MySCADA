@@ -98,7 +98,7 @@ class CertificateCreationView : View("Certificate Creator") {
                     val destinationDir = chooseDirectory("Choose directory to store new certificate")
                     destinationDir?.also {
                         try {
-                            val newCertPath = Files.createFile(Paths.get(it.toString(), certInfo.commonName))
+                            val newCertPath = Files.createFile(Paths.get(it.toString(), "${certInfo.commonName}.msc"))
                             certificateCreationModel.createCertificate(certInfo, newCertPath)
 
                             close()
