@@ -2,6 +2,7 @@ package elka.achlebos.view
 
 import elka.achlebos.model.data.AddressSpaceComponent
 import javafx.stage.FileChooser
+import javafx.stage.StageStyle
 import tornadofx.*
 import java.nio.file.Files
 
@@ -10,7 +11,7 @@ class MainView : View("MySCADA") {
         top = menubar {
             menu("Connection") {
                 item("New").action {
-                    println("New connection created")
+                    find<ConnectionCreationView>().openWindow(stageStyle = StageStyle.UTILITY)
                 }
             }
             menu("Certificate") {
@@ -33,7 +34,7 @@ class MainView : View("MySCADA") {
         }
 
         left = treeview<AddressSpaceComponent> {
-
+            TODO()
         }
     }
 }

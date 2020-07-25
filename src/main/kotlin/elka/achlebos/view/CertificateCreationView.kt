@@ -2,6 +2,7 @@ package elka.achlebos.view
 
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
+import elka.achlebos.view.popups.CertificateAlreadyExistsDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
@@ -98,12 +99,13 @@ class CertificateCreationView : View("Certificate Creator") {
                     val destinationDir = chooseDirectory("Choose directory to store new certificate")
                     destinationDir?.also {
                         try {
-                            val newCertPath = Files.createFile(Paths.get(it.toString(), "${certInfo.commonName}.msc"))
+                            val certificateName = "${certInfo.commonName}.msc"
+                            val newCertPath = Files.createFile(Paths.get(it.toString(), certificateName))
                             certificateCreationModel.createCertificate(certInfo, newCertPath)
 
                             close()
                         } catch (exc: IOException) {
-                            find<InfoDialog>().openModal(stageStyle = StageStyle.UTILITY)
+                            find<CertificateAlreadyExistsDialog>().openModal(stageStyle = StageStyle.UTILITY)
                         }
                     }
                 }
