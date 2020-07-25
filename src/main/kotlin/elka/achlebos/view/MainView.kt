@@ -1,6 +1,10 @@
 package elka.achlebos.view
 
+import elka.achlebos.model.ConnectionCreatedEvent
+import elka.achlebos.model.ConnectionRefusedEvent
 import elka.achlebos.model.data.AddressSpaceComponent
+import elka.achlebos.view.popups.ConnectionCreatedDialog
+import elka.achlebos.view.popups.ConnectionRefusedDialog
 import javafx.stage.FileChooser
 import javafx.stage.StageStyle
 import tornadofx.*
@@ -34,7 +38,15 @@ class MainView : View("MySCADA") {
         }
 
         left = treeview<AddressSpaceComponent> {
-            TODO()
+//            TODO()
+        }
+
+        subscribe<ConnectionCreatedEvent> {
+            find<ConnectionCreatedDialog>().openWindow()
+        }
+
+        subscribe<ConnectionRefusedEvent> {
+            find<ConnectionRefusedDialog>().openWindow()
         }
     }
 }
