@@ -19,8 +19,28 @@ class ConnectionCreationView : View("New connection") {
             }
         }
 
-        listview(model.discoveredEndpoints).selectionModel.selectedItemProperty().addListener { _, _, newValue ->
-            model.selectedEndpoint.value = newValue
+        listview(model.discoveredEndpoints) {
+            selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+                model.selectedEndpoint.value = newValue
+            }
+
+            cellFormat {
+                graphic = cache {
+                    form {
+                        fieldset {
+                            field("Server URI") {
+                                label(it.endpointUrl)
+                            }
+                            field("Security mode") {
+                                label(it.securityMode.toString())
+                            }
+                            field("Security policy URI") {
+                                label(it.securityPolicyUri)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         fieldset {

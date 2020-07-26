@@ -38,6 +38,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
                 throw it
             }.get()
         } catch (exc: Exception) {
+            exc.printStackTrace()
             fire(ConnectionRefusedEvent())
         }
     }

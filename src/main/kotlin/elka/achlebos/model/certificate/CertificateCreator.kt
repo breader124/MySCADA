@@ -5,6 +5,7 @@ import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.security.KeyPair
 import java.security.KeyStore
 import java.security.cert.Certificate
@@ -49,5 +50,7 @@ class X509CertificateCreator(
         } catch (exc: IOException) {
             throw CertificateCreationException(exc.localizedMessage ?: "")
         }
+
+        Files.write(Paths.get(".", "certDerEncoded"), certificate.encoded)
     }
 }
