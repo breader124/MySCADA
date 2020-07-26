@@ -31,7 +31,7 @@ class X509CertificateCreator(
 
     @Throws(CertificateCreationException::class)
     override fun create(): X509Certificate {
-        keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(4096)
+        keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048)
         val certificate = UserX509CertificateBuilder(info, keyPair).build()
         storeCertificate(certificate, keyPair)
 

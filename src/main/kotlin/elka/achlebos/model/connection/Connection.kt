@@ -27,11 +27,15 @@ class Connection(private val serverUri: String) {
         val certificateManager = X509CertificateManager()
         val (cert, keyPair) = certificateManager.load(certPassword, certificatePath)
 
+        val x509cert = cert as X509Certificate
+
         val config = OpcUaClientConfig.builder()
                 .setEndpoint(endpoint)
-                .setApplicationUri(certificatePath.fileName.toString())
-                .setCertificate(cert as X509Certificate)
+                // TODO("change it to use real application uri, otherwise there are problems with InvalidUriException")
+                .setApplicationUri("example")
+                .setCertificate(x509cert)
                 .setKeyPair(keyPair)
+                // TODO("shouldn't be anonymous")
                 .setIdentityProvider(AnonymousProvider())
                 .setRequestTimeout(uint(5000))
                 .build()
