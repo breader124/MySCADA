@@ -20,11 +20,11 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
     val certificatePath = SimpleStringProperty()
     val password = SimpleStringProperty()
 
-    fun discover() {
-        discoveredEndpoints.removeAll()
-        val nowDiscovered = item.discoverEndpoints().get()
-        discoveredEndpoints.addAll(nowDiscovered)
+    fun clearDiscoveredEndpoints() {
+        discoveredEndpoints.clear()
     }
+
+    fun discover(): List<EndpointDescription> = item.discoverEndpoints().get()
 
     fun connect() {
         try {

@@ -12,9 +12,12 @@ class ConnectionCreationView : View("New connection") {
         fieldset {
             textfield(model.serverUri)
             button("Discover endpoints").action {
+                model.clearDiscoveredEndpoints()
                 runAsync {
                     model.item = Connection(model.serverUri.value)
                     model.discover()
+                } ui {
+                    model.discoveredEndpoints.addAll(it)
                 }
             }
         }

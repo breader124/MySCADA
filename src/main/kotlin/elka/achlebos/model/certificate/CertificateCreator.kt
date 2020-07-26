@@ -51,6 +51,6 @@ class X509CertificateCreator(
             throw CertificateCreationException(exc.localizedMessage ?: "")
         }
 
-        Files.write(Paths.get(".", "certDerEncoded"), certificate.encoded)
+        Files.write(Paths.get(".", "newCertificate"), certificate.encoded)
     }
 }
