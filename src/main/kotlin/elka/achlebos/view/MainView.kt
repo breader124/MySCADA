@@ -28,7 +28,8 @@ class MainView : View("MySCADA") {
                             filters = arrayOf(
                                     FileChooser.ExtensionFilter("Certificates", "*.msc")
                             ),
-                            mode = FileChooserMode.Single
+                            mode = FileChooserMode.Single,
+                            owner = this@MainView.currentWindow
                     )
                     f.firstOrNull()?.also {
                         Files.deleteIfExists(it.toPath())

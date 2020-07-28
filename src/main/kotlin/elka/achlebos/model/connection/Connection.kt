@@ -35,7 +35,6 @@ class Connection(private val serverUri: String) {
                 .setApplicationUri("example")
                 .setCertificate(x509cert)
                 .setKeyPair(keyPair)
-                // TODO("shouldn't be anonymous")
                 .setIdentityProvider(AnonymousProvider())
                 .setRequestTimeout(uint(5000))
                 .build()
