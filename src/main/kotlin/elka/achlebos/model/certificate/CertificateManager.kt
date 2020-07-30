@@ -12,7 +12,7 @@ abstract class CertificateManager {
     protected abstract val loader: AbstractCertificateLoader
 
     @Throws(CertificateCreationException::class)
-    abstract fun create(certificateInfo: CertificateInfo, path: Path): Pair<Certificate, KeyPair>
+    abstract fun create(certificateInfo: CertificateInfo, certName: String): Pair<Certificate, KeyPair>
 
     @Throws(CertificateLoadingException::class)
     abstract fun load(password: String, path: Path): Pair<Certificate, KeyPair>
@@ -25,9 +25,9 @@ class X509CertificateManager : CertificateManager() {
     override lateinit var loader: X509CertificateLoader
 
     @Throws(CertificateCreationException::class)
-    override fun create(certificateInfo: CertificateInfo, path: Path): Pair<Certificate, KeyPair> {
+    override fun create(certificateInfo: CertificateInfo, certName: String): Pair<Certificate, KeyPair> {
         val info = certificateInfo as X509CertificateInfo
-        creator = X509CertificateCreator(info, path)
+        creator = X509CertificateCreator(info, certName)
         return Pair(creator.certificate, creator.keyPair)
     }
 

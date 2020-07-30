@@ -4,7 +4,6 @@ import elka.achlebos.model.CertificateCreationException
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.KeyPair
 import java.security.KeyStore
@@ -12,25 +11,36 @@ import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
 abstract class AbstractCertificateCreator(protected open val info: CertificateInfo,
-                                          protected val path: Path) {
-    protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
+                                          protected val certificateName: String) {
+    protected val keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType())
     abstract val certificate: Certificate
     abstract val keyPair: KeyPair
 
     @Throws(CertificateCreationException::class)
-    protected abstract fun create(): Certificate
+    protected abstract fun createCertificate(): Certificate
 }
 
 class X509CertificateCreator(
         override val info: X509CertificateInfo,
-        path: Path
-) : AbstractCertificateCreator(info, path) {
+        certificateName: String
+) : AbstractCertificateCreator(info, certificateName) {
 
-    override val certificate: X509Certificate by lazy { create() }
+    init {
+        initializeKeyStore()
+    }
+
+    override val certificate: X509Certificate by lazy { createCertificate() }
     override lateinit var keyPair: KeyPair
 
     @Throws(CertificateCreationException::class)
-    override fun create(): X509Certificate {
+    private fun initializeKeyStore() {
+        val passwordChars = info.password.toCharArray()
+        keyStore.load(null, passwordChars)
+        persistKeyStore()
+    }
+
+    @Throws(CertificateCreationException::class)
+    override fun createCertificate(): X509Certificate {
         keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048)
         val certificate = UserX509CertificateBuilder(info, keyPair).build()
         storeCertificate(certificate, keyPair)
@@ -41,11 +51,24 @@ class X509CertificateCreator(
     @Throws(CertificateCreationException::class)
     private fun storeCertificate(certificate: X509Certificate, keyPair: KeyPair) {
         val passwordChars = info.password.toCharArray()
-        val certName = path.fileName.toString()
-        keyStore.load(null, passwordChars)
-        keyStore.setKeyEntry(certName, keyPair.private, passwordChars, arrayOf(certificate))
+        keyStore.setKeyEntry(
+                certificateName,
+                keyPair.private,
+                passwordChars,
+                arrayOf(certificate)
+        )
+        persistKeyStore()
+    }
+
+    @Throws(CertificateCreationException::class)
+    private fun persistKeyStore() {
         try {
-            val outputStream = Files.newOutputStream(path)
+            val passwordChars = info.password.toCharArray()
+
+            TODO("keyStore should be saved in config directory")
+            val pathToKeyStore = Paths.get("keyStore.jks")
+
+            val outputStream = Files.newOutputStream(pathToKeyStore)
             keyStore.store(outputStream, passwordChars)
         } catch (exc: IOException) {
             throw CertificateCreationException(exc.localizedMessage ?: "")

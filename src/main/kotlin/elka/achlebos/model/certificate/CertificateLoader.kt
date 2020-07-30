@@ -10,7 +10,7 @@ import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
 abstract class AbstractCertificateLoader(protected val password: String, protected val path: Path) {
-    protected val keyStore: KeyStore = KeyStore.getInstance(KEY_STORE_TYPE)
+    protected val keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType())
     protected val certName = path.fileName.toString()
 
     abstract val certificate: Certificate

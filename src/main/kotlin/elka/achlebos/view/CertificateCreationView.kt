@@ -96,17 +96,11 @@ class CertificateCreationView : View("Certificate Creator") {
                     certInfo.dnsNames = domainNames
                     certInfo.ipAddresses = ipAddresses
 
-                    val destinationDir = chooseDirectory("Choose directory to store new certificate")
-                    destinationDir?.also {
-                        try {
-                            val certificateName = "${certInfo.applicationUri}.msc"
-                            val newCertPath = Files.createFile(Paths.get(it.toString(), certificateName))
-                            certificateCreationModel.createCertificate(certInfo, newCertPath)
-
-                            close()
-                        } catch (exc: IOException) {
-                            find<CertificateAlreadyExistsDialog>().openModal(stageStyle = StageStyle.UTILITY)
-                        }
+                    try {
+                        certificateCreationModel.createCertificate(certInfo, certInfo.commonName)
+                        close()
+                    } catch (exc: IOException) {
+                        find<CertificateAlreadyExistsDialog>().openModal(stageStyle = StageStyle.UTILITY)
                     }
                 }
             }

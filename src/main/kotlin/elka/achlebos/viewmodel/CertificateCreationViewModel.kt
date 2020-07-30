@@ -9,5 +9,5 @@ import java.nio.file.Path
 import kotlin.streams.toList
 
 class CertificateCreationViewModel: ItemViewModel<X509CertificateManager>() {
-    fun createCertificate(info: X509CertificateInfo, path: Path) = item.create(info, path)
+    fun createCertificate(info: X509CertificateInfo, certName: String) = item.create(info, certName)
 }
