@@ -9,6 +9,9 @@ import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
+// TODO("change arguments of below classes, path -> certificateName, there is fixed location where I want to store
+//       keyStore, so the only needed argument is certificateName")
+
 abstract class AbstractCertificateLoader(protected val password: String, protected val path: Path) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType())
     protected val certName = path.fileName.toString()

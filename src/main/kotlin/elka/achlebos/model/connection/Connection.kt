@@ -14,6 +14,8 @@ import java.nio.file.Path
 import java.security.cert.X509Certificate
 import java.util.concurrent.CompletableFuture
 
+// TODO("change signature of connectUsingX509Cert, I need to pass certificateName instead of certificatePath")
+
 class Connection(private val serverUri: String) {
     fun discoverEndpoints(): CompletableFuture<List<EndpointDescription>> {
         return DiscoveryClient.getEndpoints(serverUri)
@@ -28,6 +30,8 @@ class Connection(private val serverUri: String) {
         val (cert, keyPair) = certificateManager.load(certPassword, certificatePath)
 
         val x509cert = cert as X509Certificate
+
+        TODO("appUri should be available in config file of an application")
         val appUri = certificatePath
                 .last()
                 .toString()

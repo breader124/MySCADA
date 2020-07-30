@@ -25,12 +25,12 @@ class X509CertificateCreator(
         certificateName: String
 ) : AbstractCertificateCreator(info, certificateName) {
 
+    override val certificate: X509Certificate by lazy { createCertificate() }
+    override lateinit var keyPair: KeyPair
+
     init {
         initializeKeyStore()
     }
-
-    override val certificate: X509Certificate by lazy { createCertificate() }
-    override lateinit var keyPair: KeyPair
 
     @Throws(CertificateCreationException::class)
     private fun initializeKeyStore() {
