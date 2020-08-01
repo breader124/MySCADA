@@ -64,10 +64,7 @@ class X509CertificateCreator(
     private fun persistKeyStore() {
         try {
             val passwordChars = info.password.toCharArray()
-
-            TODO("keyStore should be saved in config directory")
             val pathToKeyStore = Paths.get("keyStore.jks")
-
             val outputStream = Files.newOutputStream(pathToKeyStore)
             keyStore.store(outputStream, passwordChars)
         } catch (exc: IOException) {

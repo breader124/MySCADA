@@ -1,17 +1,15 @@
 package elka.achlebos.view
 
+import elka.achlebos.model.CertificateCreatedEvent
+import elka.achlebos.model.CertificateCreationErrorEvent
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
-import elka.achlebos.view.popups.CertificateAlreadyExistsDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
-import javafx.stage.StageStyle
 import tornadofx.*
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
 
 class CertificateCreationView : View("Certificate Creator") {
     private val certificateCreationModel: CertificateCreationViewModel by inject()
@@ -28,7 +26,7 @@ class CertificateCreationView : View("Certificate Creator") {
         infoModel.item = X509CertificateInfo()
     }
 
-    override val root = scrollpane(fitToWidth = true, fitToHeight = true) {
+    override val root = scrollpane(fitToWidth = true) {
         form {
             fieldset("Information") {
                 field("Common name") {
@@ -98,9 +96,9 @@ class CertificateCreationView : View("Certificate Creator") {
 
                     try {
                         certificateCreationModel.createCertificate(certInfo, certInfo.commonName)
-                        close()
+                        fire(CertificateCreatedEvent(certInfo.commonName, certInfo.applicationUri))
                     } catch (exc: IOException) {
-                        find<CertificateAlreadyExistsDialog>().openModal(stageStyle = StageStyle.UTILITY)
+                        fire(CertificateCreationErrorEvent())
                     }
                 }
             }
