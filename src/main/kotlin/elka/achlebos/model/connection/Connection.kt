@@ -1,5 +1,6 @@
 package elka.achlebos.model.connection
 
+import elka.achlebos.Main
 import elka.achlebos.model.CertificateLoadingException
 import elka.achlebos.model.certificate.X509CertificateManager
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
@@ -26,7 +27,7 @@ class Connection(private val serverUri: String) {
                              keyStorePath: Path,
                              certPassword: String): CompletableFuture<UaClient>  {
 
-        val userRootPreferences = Preferences.userRoot()
+        val userRootPreferences = Preferences.userRoot().node("/elka/achlebos")
         val certName = userRootPreferences.get("certificateName", "")
         val appUri = userRootPreferences.get("applicationUri", "")
 
