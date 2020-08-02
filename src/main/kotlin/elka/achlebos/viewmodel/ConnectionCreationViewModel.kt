@@ -10,6 +10,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.sdk.client.api.UaClient
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription
 import tornadofx.*
+import java.nio.file.Path
 import java.nio.file.Paths
 
 class ConnectionCreationViewModel : ItemViewModel<Connection>() {
@@ -17,8 +18,9 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     val serverUri = SimpleStringProperty()
     val selectedEndpoint = SimpleObjectProperty<EndpointDescription>()
-    val certificatePath = SimpleStringProperty()
     val password = SimpleStringProperty()
+
+    private val keyStorePath: Path = Paths.get("keyStore.jks")
 
     fun clearDiscoveredEndpoints() {
         discoveredEndpoints.clear()
@@ -30,7 +32,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
         try {
             item.connectUsingX509Cert(
                     selectedEndpoint.value,
-                    Paths.get(certificatePath.value),
+                    keyStorePath,
                     password.value
             ).whenComplete { client: UaClient?, _: Throwable? ->
                 fire(ConnectionCreatedEvent(client as OpcUaClient))
@@ -38,7 +40,6 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
                 throw it
             }.get()
         } catch (exc: Exception) {
-            exc.printStackTrace()
             fire(ConnectionRefusedEvent())
         }
     }

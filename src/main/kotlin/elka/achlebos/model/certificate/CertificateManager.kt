@@ -15,7 +15,7 @@ abstract class CertificateManager {
     abstract fun create(certificateInfo: CertificateInfo, certName: String): Pair<Certificate, KeyPair>
 
     @Throws(CertificateLoadingException::class)
-    abstract fun load(password: String, path: Path): Pair<Certificate, KeyPair>
+    abstract fun load(password: String, keyStorePath: Path, certName: String): Pair<Certificate, KeyPair>
 
     abstract fun remove(path: Path)
 }
@@ -32,8 +32,8 @@ class X509CertificateManager : CertificateManager() {
     }
 
     @Throws(CertificateLoadingException::class)
-    override fun load(password: String, path: Path): Pair<Certificate, KeyPair> {
-        loader = X509CertificateLoader(password, path)
+    override fun load(password: String, keyStorePath: Path, certName: String): Pair<Certificate, KeyPair> {
+        loader = X509CertificateLoader(password, keyStorePath, certName)
         return Pair(loader.certificate, loader.keyPair)
     }
 

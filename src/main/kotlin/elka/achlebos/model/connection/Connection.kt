@@ -13,29 +13,27 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription
 import java.nio.file.Path
 import java.security.cert.X509Certificate
 import java.util.concurrent.CompletableFuture
-
-// TODO("change signature of connectUsingX509Cert, I need to pass certificateName instead of certificatePath")
+import java.util.prefs.Preferences
 
 class Connection(private val serverUri: String) {
+
     fun discoverEndpoints(): CompletableFuture<List<EndpointDescription>> {
         return DiscoveryClient.getEndpoints(serverUri)
     }
 
     @Throws(CertificateLoadingException::class, UaException::class)
     fun connectUsingX509Cert(endpoint: EndpointDescription,
-                             certificatePath: Path,
+                             keyStorePath: Path,
                              certPassword: String): CompletableFuture<UaClient>  {
 
+        val userRootPreferences = Preferences.userRoot()
+        val certName = userRootPreferences.get("certificateName", "")
+        val appUri = userRootPreferences.get("applicationUri", "")
+
         val certificateManager = X509CertificateManager()
-        val (cert, keyPair) = certificateManager.load(certPassword, certificatePath)
+        val (cert, keyPair) = certificateManager.load(certPassword, keyStorePath, certName)
 
         val x509cert = cert as X509Certificate
-
-        TODO("appUri should be available in config file of an application")
-        val appUri = certificatePath
-                .last()
-                .toString()
-                .substringBefore(".")
 
         val config = OpcUaClientConfig.builder()
                 .setEndpoint(endpoint)

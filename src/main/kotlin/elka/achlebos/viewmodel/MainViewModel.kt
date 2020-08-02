@@ -7,13 +7,14 @@ import elka.achlebos.model.ConnectionRefusedEvent
 import elka.achlebos.view.CertificateCreationView
 import elka.achlebos.view.popups.ConnectionCreatedDialog
 import elka.achlebos.view.popups.ConnectionRefusedDialog
-import javafx.stage.Modality
 import javafx.stage.StageStyle
 import tornadofx.*
 
 class MainViewModel : ViewModel() {
     init {
         preferences {
+            clear()
+
             val isCertificateAlreadyExists = getBoolean("isCertificateAlreadyExists", false)
             if (!isCertificateAlreadyExists) {
                 find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)

@@ -9,12 +9,12 @@ import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 
-// TODO("change arguments of below classes, path -> certificateName, there is fixed location where I want to store
-//       keyStore, so the only needed argument is certificateName")
+abstract class AbstractCertificateLoader(
+        protected val password: String,
+        protected val keyStorePath: Path,
+        protected val certName: String) {
 
-abstract class AbstractCertificateLoader(protected val password: String, protected val path: Path) {
     protected val keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-    protected val certName = path.fileName.toString()
 
     abstract val certificate: Certificate
     abstract val keyPair: KeyPair
@@ -23,7 +23,10 @@ abstract class AbstractCertificateLoader(protected val password: String, protect
     protected abstract fun loadCertificate(): Certificate
 }
 
-class X509CertificateLoader(password: String, path: Path) : AbstractCertificateLoader(password, path) {
+class X509CertificateLoader(
+        password: String,
+        keyStorePath: Path,
+        certName: String) : AbstractCertificateLoader(password, keyStorePath, certName) {
 
     override val certificate: Certificate by lazy { loadCertificate() }
     override val keyPair: KeyPair by lazy { loadKeyPair() }
@@ -47,7 +50,7 @@ class X509CertificateLoader(password: String, path: Path) : AbstractCertificateL
     private fun initializeKeyStore() {
         val passwordChars = password.toCharArray()
         try {
-            val inputStream = Files.newInputStream(path)
+            val inputStream = Files.newInputStream(keyStorePath)
             keyStore.load(inputStream, passwordChars)
         } catch (exc: Exception) {
             throw CertificateLoadingException(exc.localizedMessage)

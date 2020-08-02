@@ -47,23 +47,6 @@ class ConnectionCreationView : View("New connection") {
         }
 
         fieldset {
-            field("Certificate path") {
-                button("Choose certificate").action {
-                    val f = chooseFile(
-                            title = "Choose certificate to delete",
-                            filters = arrayOf(
-                                    FileChooser.ExtensionFilter("Certificates", "*.msc")
-                            ),
-                            mode = FileChooserMode.Single,
-                            owner = this@ConnectionCreationView.currentWindow
-                    )
-                    f.firstOrNull()?.also {
-                        model.certificatePath.value = it.absolutePath
-                    }
-                }
-                text(model.certificatePath)
-            }
-
             field("Password") {
                 passwordfield(model.password)
             }
