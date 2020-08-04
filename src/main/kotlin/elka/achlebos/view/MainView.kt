@@ -1,5 +1,6 @@
 package elka.achlebos.view
 
+import elka.achlebos.model.CertificateRemovedEvent
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.viewmodel.MainViewModel
 import javafx.stage.StageStyle
@@ -13,6 +14,16 @@ class MainView : View("MySCADA") {
             menu("Connection") {
                 item("New").action {
                     find<ConnectionCreationView>().openWindow(stageStyle = StageStyle.UTILITY)
+                }
+            }
+
+            menu("Certificate") {
+                item("Create").action {
+                    find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
+                }
+
+                item("Remove").action {
+                    fire(CertificateRemovedEvent())
                 }
             }
         }

@@ -2,7 +2,6 @@ package elka.achlebos.view
 
 import elka.achlebos.model.connection.Connection
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
-import javafx.stage.FileChooser
 import tornadofx.*
 
 class ConnectionCreationView : View("New connection") {

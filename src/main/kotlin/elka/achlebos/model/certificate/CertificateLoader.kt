@@ -36,7 +36,7 @@ class X509CertificateLoader(
     }
 
     override fun loadCertificate(): X509Certificate {
-        return keyStore.getCertificate(certName) as X509Certificate
+        return (keyStore.getCertificate(certName) as X509Certificate)
     }
 
     @Throws(CertificateLoadingException::class)

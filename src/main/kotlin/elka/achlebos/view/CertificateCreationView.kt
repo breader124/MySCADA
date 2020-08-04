@@ -96,7 +96,11 @@ class CertificateCreationView : View("Certificate Creator") {
 
                     try {
                         certificateCreationModel.createCertificate(certInfo, certInfo.commonName)
-                        fire(CertificateCreatedEvent(certInfo.commonName, certInfo.applicationUri))
+                        fire(CertificateCreatedEvent(
+                                certInfo.commonName,
+                                certInfo.applicationUri,
+                                certInfo.validityPeriod)
+                        )
                     } catch (exc: IOException) {
                         fire(CertificateCreationErrorEvent())
                     }

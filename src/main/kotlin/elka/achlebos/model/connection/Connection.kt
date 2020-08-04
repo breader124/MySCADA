@@ -1,6 +1,5 @@
 package elka.achlebos.model.connection
 
-import elka.achlebos.Main
 import elka.achlebos.model.CertificateLoadingException
 import elka.achlebos.model.certificate.X509CertificateManager
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
