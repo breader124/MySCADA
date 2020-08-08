@@ -101,6 +101,7 @@ class CertificateCreationView : View("Certificate Creator") {
                                 certInfo.applicationUri,
                                 certInfo.validityPeriod)
                         )
+                        close()
                     } catch (exc: IOException) {
                         fire(CertificateCreationErrorEvent())
                     }

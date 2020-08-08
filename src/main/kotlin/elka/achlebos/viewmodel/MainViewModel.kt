@@ -5,22 +5,16 @@ import elka.achlebos.view.CertificateCreationView
 import elka.achlebos.view.popups.CertificateCreationErrorDialog
 import elka.achlebos.view.popups.ConnectionCreatedDialog
 import elka.achlebos.view.popups.ConnectionRefusedDialog
+import javafx.stage.Modality
 import javafx.stage.StageStyle
 import tornadofx.*
 import java.time.LocalDate
-import java.time.format.DateTimeParseException
+import java.time.format.DateTimeParseException;
 
 class MainViewModel : ViewModel() {
     init {
         preferences {
             clear() // TODO("remove at further stage of project")
-
-            val isCertificateAlreadyExists = getBoolean("isCertificateAlreadyExists", false)
-            val isCertificateExpired = checkIfCertificateExpired()
-
-            if (!isCertificateAlreadyExists || isCertificateExpired) {
-                find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
-            }
         }
 
         subscribe<CertificateCreatedEvent> { event ->
@@ -32,14 +26,12 @@ class MainViewModel : ViewModel() {
                 val expirationDate = LocalDate.now().plus(event.validityPeriod)
                 put("expirationDate", expirationDate.toString())
             }
-            find<CertificateCreationView>().close()
         }
 
         subscribe<CertificateRemovedEvent> {
             preferences {
                 putBoolean("isCertificateAlreadyExists", false)
             }
-            find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
         }
 
         subscribe<CertificateCreationErrorEvent> {
@@ -55,17 +47,28 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun checkIfCertificateExpired(): Boolean {
-        var isCertificateExpired = true
+    fun checkIfNeedToCreateNewCert(): Boolean {
+        var needToCreateNewCert = false
+        preferences {
+            val isCertificateAlreadyExists = getBoolean("isCertificateAlreadyExists", false)
+            val isCertificateNotExpired = checkIfCertificateNotExpired()
+
+            needToCreateNewCert = (!isCertificateAlreadyExists || !isCertificateNotExpired)
+        }
+        return needToCreateNewCert
+    }
+
+    private fun checkIfCertificateNotExpired(): Boolean {
+        var isCertificateNotExpired = false
         preferences {
             try {
                 val expirationDate = LocalDate.parse(get("expirationDate", ""))
-                isCertificateExpired = expirationDate.isBefore(LocalDate.now())
+                isCertificateNotExpired = expirationDate.isBefore(LocalDate.now())
             } catch (exc: DateTimeParseException) {
                 // suppress exception
             }
         }
 
-        return isCertificateExpired
+        return isCertificateNotExpired
     }
 }
