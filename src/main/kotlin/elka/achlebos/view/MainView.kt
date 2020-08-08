@@ -6,13 +6,13 @@ import javafx.stage.StageStyle
 import tornadofx.*
 
 class MainView : View("MySCADA") {
-    private val viewModel: MainViewModel = MainViewModel()
+    private val viewModel: MainViewModel by inject()
 
     override fun onDock() {
-//        if (viewModel.checkIfNeedToCreateNewCert()) {
-//            find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
-//        }
         super.onDock()
+        if (viewModel.checkIfNeedToCreateNewCert()) {
+            find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
+        }
     }
 
     override val root = borderpane {
