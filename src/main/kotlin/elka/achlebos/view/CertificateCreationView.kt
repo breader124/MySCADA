@@ -1,9 +1,8 @@
 package elka.achlebos.view
 
-import elka.achlebos.model.CertificateCreatedEvent
-import elka.achlebos.model.CertificateCreationErrorEvent
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
+import elka.achlebos.view.popups.CertificateCreationErrorDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
@@ -20,6 +19,10 @@ class CertificateCreationView : View("Certificate Creator") {
 
     private val ipAddresses = infoModel.ipAddresses.asObservable()
     private val newIpAddress = SimpleStringProperty()
+
+    private val ROW_HEIGHT = 30
+    private val NUM_OF_ROWS = 6
+    private val PREFERRED_LISTVIEW_HEIGHT = (NUM_OF_ROWS * ROW_HEIGHT).toDouble()
 
     init {
         certificateCreationModel.item = X509CertificateManager()
@@ -54,7 +57,9 @@ class CertificateCreationView : View("Certificate Creator") {
                 }
                 vbox {
                     field("Domain names") {
-                        listview(domainNames)
+                        listview(domainNames) {
+                            prefHeight = PREFERRED_LISTVIEW_HEIGHT
+                        }
                     }
                     hbox {
                         textfield(newDomain)
@@ -69,7 +74,9 @@ class CertificateCreationView : View("Certificate Creator") {
                 }
                 vbox {
                     field("IP addresses") {
-                        listview(ipAddresses)
+                        listview(ipAddresses) {
+                            prefHeight = PREFERRED_LISTVIEW_HEIGHT
+                        }
                     }
                     hbox {
                         textfield(newIpAddress)
@@ -96,14 +103,10 @@ class CertificateCreationView : View("Certificate Creator") {
 
                     try {
                         certificateCreationModel.createCertificate(certInfo, certInfo.commonName)
-                        fire(CertificateCreatedEvent(
-                                certInfo.commonName,
-                                certInfo.applicationUri,
-                                certInfo.validityPeriod)
-                        )
+                        infoModel.storeInformationInPreferences()
                         close()
                     } catch (exc: IOException) {
-                        fire(CertificateCreationErrorEvent())
+                        find<CertificateCreationErrorDialog>().openWindow()
                     }
                 }
             }

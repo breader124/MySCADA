@@ -1,8 +1,8 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.ConnectionCreatedEvent
-import elka.achlebos.model.ConnectionRefusedEvent
 import elka.achlebos.model.connection.Connection
+import elka.achlebos.view.popups.ConnectionRefusedDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
@@ -40,7 +40,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
                 throw it
             }.get()
         } catch (exc: Exception) {
-            fire(ConnectionRefusedEvent())
+            find<ConnectionRefusedDialog>().openWindow()
         }
     }
 }

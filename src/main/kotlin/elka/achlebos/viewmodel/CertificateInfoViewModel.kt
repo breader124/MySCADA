@@ -29,4 +29,15 @@ class CertificateInfoViewModel : ItemViewModel<X509CertificateInfo>() {
         val picked = pickedDate.value
         validityPeriod.value = Period.between(now, picked)
     }
+
+    fun storeInformationInPreferences() {
+        preferences {
+            putBoolean("isCertificateAlreadyExists", true)
+            put("certificateName", item.commonName)
+            put("applicationUri", item.applicationUri)
+
+            val expirationDate = LocalDate.now().plus(item.validityPeriod)
+            put("expirationDate", expirationDate.toString())
+        }
+    }
 }

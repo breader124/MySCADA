@@ -29,6 +29,7 @@ class MainView : View("MySCADA") {
                 }
 
                 item("Remove").action {
+                    viewModel.switchCertificateAlreadyExistsToFalse()
                     find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
                 }
             }

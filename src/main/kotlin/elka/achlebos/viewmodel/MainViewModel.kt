@@ -17,33 +17,14 @@ class MainViewModel : ViewModel() {
             clear() // TODO("remove at further stage of project")
         }
 
-        subscribe<CertificateCreatedEvent> { event ->
-            preferences {
-                putBoolean("isCertificateAlreadyExists", true)
-                put("certificateName", event.certificateName)
-                put("applicationUri", event.appUri)
-
-                val expirationDate = LocalDate.now().plus(event.validityPeriod)
-                put("expirationDate", expirationDate.toString())
-            }
-        }
-
-        subscribe<CertificateRemovedEvent> {
-            preferences {
-                putBoolean("isCertificateAlreadyExists", false)
-            }
-        }
-
-        subscribe<CertificateCreationErrorEvent> {
-            find<CertificateCreationErrorDialog>().openWindow()
-        }
-
         subscribe<ConnectionCreatedEvent> {
             find<ConnectionCreatedDialog>().openWindow()
         }
+    }
 
-        subscribe<ConnectionRefusedEvent> {
-            find<ConnectionRefusedDialog>().openWindow()
+    fun switchCertificateAlreadyExistsToFalse() {
+        preferences {
+            putBoolean("isCertificateAlreadyExists", false)
         }
     }
 
