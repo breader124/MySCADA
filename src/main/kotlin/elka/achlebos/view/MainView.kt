@@ -1,6 +1,5 @@
 package elka.achlebos.view
 
-import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.viewmodel.MainViewModel
 import javafx.stage.StageStyle
 import tornadofx.*
@@ -35,8 +34,7 @@ class MainView : View("MySCADA") {
             }
         }
 
-        left = treeview<AddressSpaceComponent> {
-//            TODO()
-        }
+        left<AddressSpaceFragment>()
+
     }
 }
