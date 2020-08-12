@@ -1,5 +1,6 @@
 package elka.achlebos.model.data
 
+import javafx.collections.ObservableList
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem
 import org.eclipse.milo.opcua.stack.core.AttributeId
@@ -8,10 +9,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.*
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned
 import org.eclipse.milo.opcua.stack.core.types.enumerated.*
 import org.eclipse.milo.opcua.stack.core.types.structured.*
+import tornadofx.*
 import java.util.concurrent.CompletableFuture
 
 abstract class AddressSpaceComponent(protected open val nodeId: NodeId,
                                      protected val client: OpcUaClient) {
+
+    abstract val items: ObservableList<AddressSpaceComponent>?
+
     open fun add(component: AddressSpaceComponent) {
         throw UnsupportedOperationException("Cannot add")
     }
@@ -39,6 +44,9 @@ abstract class AddressSpaceComponent(protected open val nodeId: NodeId,
 }
 
 class AddressSpaceNode(nodeId: NodeId, client: OpcUaClient) : AddressSpaceComponent(nodeId, client) {
+
+    override var items: ObservableList<AddressSpaceComponent>? = null
+
     override fun readValue(): CompletableFuture<DataValue> {
         val variableNode = client.addressSpace.createVariableNode(nodeId)
         return variableNode.readValue()
@@ -52,6 +60,7 @@ class AddressSpaceNode(nodeId: NodeId, client: OpcUaClient) : AddressSpaceCompon
 
     override fun subscribe(timeInterval: Double,
                            onItemCreated: (UaMonitoredItem, Int) -> Unit): CompletableFuture<List<UaMonitoredItem>> {
+
         val subscription = client.subscriptionManager.createSubscription(timeInterval)
         return subscription.thenCompose {
             val readValue = ReadValueId(
@@ -83,7 +92,8 @@ class AddressSpaceNode(nodeId: NodeId, client: OpcUaClient) : AddressSpaceCompon
 }
 
 class AddressSpaceCatalogue(node: NodeId, client: OpcUaClient) : AddressSpaceComponent(node, client) {
-    private val items: MutableList<AddressSpaceComponent> = mutableListOf()
+
+    override val items: ObservableList<AddressSpaceComponent> = observableListOf()
 
     override fun add(component: AddressSpaceComponent) {
         items.add(component)

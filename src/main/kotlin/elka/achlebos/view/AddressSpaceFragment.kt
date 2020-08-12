@@ -37,15 +37,15 @@ class AddressSpaceFragment : Fragment() {
     private fun generateTreeFor(root: AddressSpaceComponent): TreeView<AddressSpaceComponent> {
         return treeview(TreeItem(root)) {
             populate {
-                TODO("Not implemented yet")
+                it.value.items
             }
 
             cellFormat {
-                TODO("Not implemented yet")
+                label(this.item.toString())
             }
 
             onUserSelect {
-                TODO("Not implemented yet")
+                println("$it")
             }
         }
     }
