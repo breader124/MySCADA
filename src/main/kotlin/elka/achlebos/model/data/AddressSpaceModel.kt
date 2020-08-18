@@ -12,8 +12,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.*
 import tornadofx.*
 import java.util.concurrent.CompletableFuture
 
-abstract class AddressSpaceComponent(protected open val nodeId: NodeId,
-                                     protected val client: OpcUaClient) {
+abstract class AddressSpaceComponent(open val nodeId: NodeId, protected val client: OpcUaClient) {
 
     abstract val items: ObservableList<AddressSpaceComponent>?
 

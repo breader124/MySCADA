@@ -10,15 +10,9 @@ import java.time.format.DateTimeParseException;
 
 class MainViewModel : ViewModel() {
     init {
-        preferences {
-            clear() // TODO("remove at further stage of project")
-        }
-
         subscribe<ConnectionCreatedEvent> { event ->
             find<ConnectionCreatedDialog>().openWindow()
-
-            val c = Client(event.opcUaClient)
-            ClientsManager.addClient(c)
+            ClientsManager.addClient(Client(event.opcUaClient))
         }
     }
 
