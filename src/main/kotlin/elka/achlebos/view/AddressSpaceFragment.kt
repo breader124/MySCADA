@@ -4,13 +4,12 @@ import elka.achlebos.model.client.Client
 import elka.achlebos.model.client.ClientsManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
-import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
-import javafx.scene.layout.VBox
+import javafx.scene.layout.BorderPane
 import tornadofx.*
 
 class AddressSpaceFragment : Fragment() {
@@ -19,18 +18,18 @@ class AddressSpaceFragment : Fragment() {
     private val connectedServers: ObservableList<Client> = ClientsManager.connected
     private val selectedServer = SimpleObjectProperty<Client>()
 
-    private var serverTreeVBox: VBox by singleAssign()
+    private var serverTreeBorderPane: BorderPane by singleAssign()
     private val alreadyGeneratedTreesMap = mutableMapOf<Client, TreeView<AddressSpaceComponent>>()
-    private lateinit var actuallyDisplayedClient: Client
+    private lateinit var currentlyDisplayedClient: Client
 
     init {
         selectedServer.onChange {
             it?.also {
                 val treeView = alreadyGeneratedTreesMap.computeIfAbsent(it) { client ->
-                    actuallyDisplayedClient = client
+                    currentlyDisplayedClient = client
                     generateTreeFor(client)
                 }
-                serverTreeVBox.replaceChildren(treeView)
+                serverTreeBorderPane.center = treeView
             }
         }
     }
@@ -40,14 +39,28 @@ class AddressSpaceFragment : Fragment() {
         setWidthAsPartOfParentWidth()
     }
 
-    override val root = vbox {
-        label("Connected servers")
-        combobox(selectedServer, connectedServers)
+    override val root = borderpane {
+        serverTreeBorderPane = this
 
-        vbox {
-            serverTreeVBox = this
+        top {
+            label("Connected servers")
+            combobox(selectedServer, connectedServers) {
+                fitToParentWidth()
+            }
+        }
 
-            useMaxHeight = true
+        center {
+            label("There is no connected server")
+        }
+
+        bottom {
+            button("Disconnect") {
+                action {
+                    println("Disconnected")
+                }
+
+                fitToParentWidth()
+            }
         }
     }
 
@@ -55,7 +68,7 @@ class AddressSpaceFragment : Fragment() {
         val root: AddressSpaceComponent = client.rootCatalogue
         return treeview(TreeItem(root)) {
             populate {
-                model.discoverCatalogueContent(it.value, actuallyDisplayedClient.opcUaClient)
+                model.discoverCatalogueContent(it.value, currentlyDisplayedClient.opcUaClient)
             }
 
             cellFormat {
