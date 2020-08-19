@@ -15,7 +15,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
 import tornadofx.*
-import java.lang.UnsupportedOperationException
 
 class AddressSpaceFragment : Fragment() {
 
@@ -44,8 +43,16 @@ class AddressSpaceFragment : Fragment() {
 
         vbox {
             serverTreeVBox = this
+
+            useMaxHeight = true
         }
     }
+
+    override fun onDock() {
+        super.onDock()
+        setWidthAsPartOfParentWidth()
+    }
+
 
     private fun generateTreeFor(client: Client): TreeView<AddressSpaceComponent> {
         val root: AddressSpaceComponent = client.rootCatalogue
@@ -57,7 +64,15 @@ class AddressSpaceFragment : Fragment() {
             onUserSelect {
                 println("$it")
             }
+
+            fitToParentHeight()
         }
+    }
+
+    private fun setWidthAsPartOfParentWidth() {
+        val prefPart = 0.2
+        val parentWindowWidthProperty = currentWindow?.widthProperty()?.multiply(prefPart)
+        root.prefWidthProperty().bind(parentWindowWidthProperty)
     }
 
     private fun discoverCatalogueContent(component: AddressSpaceComponent): ObservableList<AddressSpaceComponent>? {
