@@ -12,7 +12,7 @@ class MainViewModel : ViewModel() {
     init {
         subscribe<ConnectionCreatedEvent> { event ->
             find<ConnectionCreatedDialog>().openWindow()
-            ClientsManager.addClient(Client(event.opcUaClient))
+            ClientsManager.addClient(Client(event.name, event.opcUaClient))
         }
     }
 

@@ -35,7 +35,8 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
                     keyStorePath,
                     password.value
             ).whenComplete { client: UaClient?, _: Throwable? ->
-                fire(ConnectionCreatedEvent(client as OpcUaClient))
+                val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
+                fire(ConnectionCreatedEvent(name, client as OpcUaClient))
             }.exceptionally {
                 throw it
             }.get()

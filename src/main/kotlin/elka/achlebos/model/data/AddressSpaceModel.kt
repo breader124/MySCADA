@@ -12,7 +12,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.*
 import tornadofx.*
 import java.util.concurrent.CompletableFuture
 
-abstract class AddressSpaceComponent(open val nodeId: NodeId, protected val client: OpcUaClient) {
+abstract class AddressSpaceComponent(open val nodeId: NodeId,
+                                     val name: String,
+                                     protected val client: OpcUaClient) {
 
     abstract val items: ObservableList<AddressSpaceComponent>?
 
@@ -42,7 +44,7 @@ abstract class AddressSpaceComponent(open val nodeId: NodeId, protected val clie
     }
 }
 
-class AddressSpaceNode(nodeId: NodeId, client: OpcUaClient) : AddressSpaceComponent(nodeId, client) {
+class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : AddressSpaceComponent(nodeId, name, client) {
 
     override var items: ObservableList<AddressSpaceComponent>? = null
 
@@ -90,7 +92,7 @@ class AddressSpaceNode(nodeId: NodeId, client: OpcUaClient) : AddressSpaceCompon
     }
 }
 
-class AddressSpaceCatalogue(node: NodeId, client: OpcUaClient) : AddressSpaceComponent(node, client) {
+class AddressSpaceCatalogue(node: NodeId, name: String, client: OpcUaClient) : AddressSpaceComponent(node, name, client) {
 
     override val items: ObservableList<AddressSpaceComponent> = observableListOf()
 

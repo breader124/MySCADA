@@ -3,4 +3,4 @@ package elka.achlebos.model
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import tornadofx.*
 
-class ConnectionCreatedEvent(val opcUaClient: OpcUaClient): FXEvent()
+class ConnectionCreatedEvent(val name: String, val opcUaClient: OpcUaClient): FXEvent()
