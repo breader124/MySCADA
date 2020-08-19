@@ -6,7 +6,6 @@ import elka.achlebos.view.popups.CertificateCreationErrorDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
-import javafx.geometry.Pos
 import tornadofx.*
 import java.io.IOException
 
@@ -66,10 +65,6 @@ class CertificateCreationView : View("Certificate Creator") {
                         button("+").setOnAction {
                             domainNames.add(newDomain.value)
                         }
-
-                        style {
-                            alignment = Pos.CENTER_RIGHT
-                        }
                     }
                 }
                 vbox {
@@ -82,10 +77,6 @@ class CertificateCreationView : View("Certificate Creator") {
                         textfield(newIpAddress)
                         button("+").setOnAction {
                             ipAddresses.add(newIpAddress.value)
-                        }
-
-                        style {
-                            alignment = Pos.CENTER_RIGHT
                         }
                     }
                 }

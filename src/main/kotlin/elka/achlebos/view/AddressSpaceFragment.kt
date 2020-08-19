@@ -39,6 +39,7 @@ class AddressSpaceFragment : Fragment() {
     }
 
     override val root = vbox {
+        label("Connected servers")
         combobox(selectedServer, connectedServers)
 
         vbox {
@@ -60,29 +61,26 @@ class AddressSpaceFragment : Fragment() {
     }
 
     private fun discoverCatalogueContent(component: AddressSpaceComponent): ObservableList<AddressSpaceComponent>? {
-        val browseResult: BrowseResult
-        try {
-            browseResult = component.browse().get()
-        } catch (exc: UnsupportedOperationException) {
-            return null
-        }
+        runAsync {
+            val browseResult: BrowseResult
+            if (component is AddressSpaceCatalogue) {
+                browseResult = component.browse().get()
+            } else {
+                return@runAsync
+            }
 
-        val references: List<ReferenceDescription>? = browseResult.references?.asList()
-
-        if (references == null || references.isEmpty()) {
-            return null
-        }
-
-        references.forEach { reference ->
-            val nodeClass = reference.nodeClass
-            val nodeIdOpt = reference.nodeId.local(NamespaceTable())
-            nodeIdOpt.ifPresent { nodeId ->
-                if (nodeClass == NodeClass.Object) {
-                    val discoveredCatalogue = AddressSpaceCatalogue(nodeId, actuallyDisplayedClient.opcUaClient)
-                    component.add(discoveredCatalogue)
-                } else if (nodeClass == NodeClass.Variable) {
-                    val discoveredNode = AddressSpaceNode(nodeId, actuallyDisplayedClient.opcUaClient)
-                    component.add(discoveredNode)
+            val references: List<ReferenceDescription>? = browseResult.references?.asList()
+            references?.forEach { reference ->
+                val nodeClass = reference.nodeClass
+                val nodeIdOpt = reference.nodeId.local(NamespaceTable())
+                nodeIdOpt.ifPresent { nodeId ->
+                    if (nodeClass == NodeClass.Object) {
+                        val discoveredCatalogue = AddressSpaceCatalogue(nodeId, actuallyDisplayedClient.opcUaClient)
+                        component.add(discoveredCatalogue)
+                    } else if (nodeClass == NodeClass.Variable) {
+                        val discoveredNode = AddressSpaceNode(nodeId, actuallyDisplayedClient.opcUaClient)
+                        component.add(discoveredNode)
+                    }
                 }
             }
         }
