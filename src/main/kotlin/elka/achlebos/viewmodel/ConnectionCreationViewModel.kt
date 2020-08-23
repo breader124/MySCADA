@@ -29,19 +29,15 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
     fun discover(): List<EndpointDescription> = item.discoverEndpoints().get()
 
     fun connect() {
-        try {
-            item.connectUsingX509Cert(
-                    selectedEndpoint.value,
-                    keyStorePath,
-                    password.value
-            ).whenComplete { client: UaClient?, _: Throwable? ->
-                val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
-                fire(ConnectionCreatedEvent(name, client as OpcUaClient))
-            }.exceptionally {
-                throw it
-            }.get()
-        } catch (exc: Exception) {
-            find<ConnectionRefusedDialog>().openWindow()
-        }
+        item.connectUsingX509Cert(
+                selectedEndpoint.value,
+                keyStorePath,
+                password.value
+        ).whenComplete { client: UaClient?, _: Throwable? ->
+            val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
+            fire(ConnectionCreatedEvent(name, client as OpcUaClient))
+        }.exceptionally {
+            throw it
+        }.get()
     }
 }

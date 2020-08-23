@@ -7,6 +7,7 @@ import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
+import javafx.scene.control.Label
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
 import javafx.scene.layout.BorderPane
@@ -14,19 +15,22 @@ import tornadofx.*
 
 class AddressSpaceFragment : Fragment() {
     private val model: AddressSpaceFragmentModel by inject()
+    private var serverTreeBorderPane: BorderPane by singleAssign()
+    private var noConnectedServerLabel: Label by singleAssign()
+    private val noChosenServerLabel = label("There is no chosen server")
 
     private val connectedServers: ObservableList<Client> = ClientsManager.connected
-    private val selectedServer = SimpleObjectProperty<Client>()
+    private val selectedServer = SimpleObjectProperty<Client?>()
 
-    private var serverTreeBorderPane: BorderPane by singleAssign()
     private val alreadyGeneratedTreesMap = mutableMapOf<Client, TreeView<AddressSpaceComponent>>()
     private lateinit var currentlyDisplayedClient: Client
 
     init {
         selectedServer.onChange {
             it?.also {
+                currentlyDisplayedClient = it
+                println(currentlyDisplayedClient.toString())
                 val treeView = alreadyGeneratedTreesMap.computeIfAbsent(it) { client ->
-                    currentlyDisplayedClient = client
                     generateTreeFor(client)
                 }
                 serverTreeBorderPane.center = treeView
@@ -50,13 +54,13 @@ class AddressSpaceFragment : Fragment() {
         }
 
         center {
-            label("There is no connected server")
+            noConnectedServerLabel = label("There is no connected server")
         }
 
         bottom {
             button("Disconnect") {
                 action {
-                    println("Disconnected")
+                    performDisconnection()
                 }
 
                 fitToParentWidth()
@@ -68,7 +72,11 @@ class AddressSpaceFragment : Fragment() {
         val root: AddressSpaceComponent = client.rootCatalogue
         return treeview(TreeItem(root)) {
             populate {
-                model.discoverCatalogueContent(it.value, currentlyDisplayedClient.opcUaClient)
+                if (connectedServers.contains(currentlyDisplayedClient)) {
+                    model.discoverCatalogueContent(it.value, currentlyDisplayedClient.opcUaClient)
+                } else {
+                    null
+                }
             }
 
             cellFormat {
@@ -88,5 +96,19 @@ class AddressSpaceFragment : Fragment() {
         val prefPart = 0.2
         val parentWindowWidthProperty = currentWindow?.widthProperty()?.multiply(prefPart)
         root.prefWidthProperty().bind(parentWindowWidthProperty)
+    }
+
+    private fun performDisconnection() {
+        val currentlyConnectedServers = connectedServers.filter { it !== currentlyDisplayedClient }
+
+        model.disconnect(currentlyDisplayedClient)
+//        ClientsManager.removeClient(currentlyDisplayedClient) TODO("source of all problems, after deletion of element in the middle of the list, previous element is taken and put into selectedServer property)
+        if (currentlyConnectedServers.isEmpty()) {
+            serverTreeBorderPane.center = noConnectedServerLabel
+        } else {
+            serverTreeBorderPane.center = noChosenServerLabel
+            alreadyGeneratedTreesMap.remove(currentlyDisplayedClient)
+            selectedServer.value = null
+        }
     }
 }

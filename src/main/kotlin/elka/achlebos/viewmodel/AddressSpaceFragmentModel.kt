@@ -1,5 +1,7 @@
 package elka.achlebos.viewmodel
 
+import elka.achlebos.model.client.Client
+import elka.achlebos.model.client.ClientsManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
@@ -40,5 +42,11 @@ class AddressSpaceFragmentModel : ViewModel() {
         }
 
         return component.items
+    }
+
+    fun disconnect(client: Client) {
+        println("To disconnect: $client")
+        client.disconnect().get()
+        println("Disconnected $client")
     }
 }

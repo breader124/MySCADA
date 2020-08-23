@@ -1,6 +1,7 @@
 package elka.achlebos.view
 
 import elka.achlebos.model.connection.Connection
+import elka.achlebos.view.popups.ConnectionRefusedDialog
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
 import tornadofx.*
 
@@ -54,6 +55,8 @@ class ConnectionCreationView : View("New connection") {
         button("Connect").action {
             runAsync {
                 model.connect()
+            } fail {
+                find<ConnectionRefusedDialog>().openWindow()
             }
             close()
         }
