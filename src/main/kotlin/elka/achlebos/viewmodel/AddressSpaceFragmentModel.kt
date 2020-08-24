@@ -12,8 +12,13 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
 import tornadofx.*
+import java.util.logging.Logger
 
 class AddressSpaceFragmentModel : ViewModel() {
+    companion object {
+        private val logger: Logger = Logger.getLogger(AddressSpaceFragmentModel::class.simpleName)
+    }
+
     fun discoverCatalogueContent(component: AddressSpaceComponent,
                                  currentClient: OpcUaClient): ObservableList<AddressSpaceComponent>? {
         runAsync {
@@ -45,8 +50,12 @@ class AddressSpaceFragmentModel : ViewModel() {
     }
 
     fun disconnect(client: Client) {
-        println("To disconnect: $client")
-        client.disconnect().get()
-        println("Disconnected $client")
+        runAsync {
+            logger.info("To disconnect: $client")
+
+            client.disconnect().get()
+
+            logger.info("Disconnected $client")
+        }
     }
 }

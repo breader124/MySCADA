@@ -12,8 +12,13 @@ import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
+import java.util.logging.Logger
 
 class AddressSpaceFragment : Fragment() {
+    companion object {
+        private val logger: Logger = Logger.getLogger(AddressSpaceFragment::class.simpleName)
+    }
+
     private val model: AddressSpaceFragmentModel by inject()
     private var serverTreeBorderPane: BorderPane by singleAssign()
     private var noConnectedServerLabel: Label by singleAssign()
@@ -29,11 +34,23 @@ class AddressSpaceFragment : Fragment() {
         selectedServer.onChange {
             it?.also {
                 currentlyDisplayedClient = it
-                println(currentlyDisplayedClient.toString())
+
+                logger.info(currentlyDisplayedClient.toString())
+
                 val treeView = alreadyGeneratedTreesMap.computeIfAbsent(it) { client ->
                     generateTreeFor(client)
                 }
                 serverTreeBorderPane.center = treeView
+            }
+        }
+
+        connectedServers.onChange {
+            if (selectedServer.value == null) {
+                if (connectedServers.isNotEmpty()) {
+                    serverTreeBorderPane.center = noChosenServerLabel
+                } else {
+                    serverTreeBorderPane.center = noConnectedServerLabel
+                }
             }
         }
     }
@@ -85,7 +102,7 @@ class AddressSpaceFragment : Fragment() {
             }
 
             onUserSelect {
-                println("$it")
+                logger.info("$it")
             }
 
             fitToParentHeight()
@@ -102,13 +119,12 @@ class AddressSpaceFragment : Fragment() {
         val currentlyConnectedServers = connectedServers.filter { it !== currentlyDisplayedClient }
 
         model.disconnect(currentlyDisplayedClient)
-//        ClientsManager.removeClient(currentlyDisplayedClient) TODO("source of all problems, after deletion of element in the middle of the list, previous element is taken and put into selectedServer property)
         if (currentlyConnectedServers.isEmpty()) {
             serverTreeBorderPane.center = noConnectedServerLabel
         } else {
-            serverTreeBorderPane.center = noChosenServerLabel
             alreadyGeneratedTreesMap.remove(currentlyDisplayedClient)
             selectedServer.value = null
         }
+        ClientsManager.removeClient(currentlyDisplayedClient)
     }
 }
