@@ -5,6 +5,7 @@ import elka.achlebos.model.client.ClientsManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.Label
@@ -12,12 +13,8 @@ import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
-import java.util.logging.Logger
 
 class AddressSpaceFragment : Fragment() {
-    companion object {
-        private val logger: Logger = Logger.getLogger(AddressSpaceFragment::class.simpleName)
-    }
 
     private val model: AddressSpaceFragmentModel by inject()
     private var serverTreeBorderPane: BorderPane by singleAssign()
@@ -30,13 +27,14 @@ class AddressSpaceFragment : Fragment() {
     private val alreadyGeneratedTreesMap = mutableMapOf<Client, TreeView<AddressSpaceComponent>>()
     private lateinit var currentlyDisplayedClient: Client
 
+    private val readWriteOptionInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
+    private val disconnectButtonInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
+
     init {
         selectedServer.onChange {
+            disconnectButtonInactive.value = it == null
             it?.also {
                 currentlyDisplayedClient = it
-
-                logger.info(currentlyDisplayedClient.toString())
-
                 val treeView = alreadyGeneratedTreesMap.computeIfAbsent(it) { client ->
                     generateTreeFor(client)
                 }
@@ -76,6 +74,10 @@ class AddressSpaceFragment : Fragment() {
 
         bottom {
             button("Disconnect") {
+                disableWhen {
+                    disconnectButtonInactive
+                }
+
                 action {
                     performDisconnection()
                 }
@@ -101,8 +103,30 @@ class AddressSpaceFragment : Fragment() {
                 text = "$prefix ${it.name}"
             }
 
+            contextmenu {
+                item("Read value") {
+                    disableWhen {
+                        readWriteOptionInactive
+                    }
+
+                    action {
+                        TODO("Read value placeholder")
+                    }
+                }
+
+                item("Write value") {
+                    disableWhen {
+                        readWriteOptionInactive
+                    }
+
+                    action {
+                        TODO("Write value placeholder")
+                    }
+                }
+            }
+
             onUserSelect {
-                logger.info("$it")
+                readWriteOptionInactive.value = it is AddressSpaceCatalogue
             }
 
             fitToParentHeight()
@@ -123,8 +147,8 @@ class AddressSpaceFragment : Fragment() {
             serverTreeBorderPane.center = noConnectedServerLabel
         } else {
             alreadyGeneratedTreesMap.remove(currentlyDisplayedClient)
-            selectedServer.value = null
         }
+        selectedServer.value = null
         ClientsManager.removeClient(currentlyDisplayedClient)
     }
 }
