@@ -1,14 +1,13 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.client.Client
-import elka.achlebos.model.client.ClientsManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
 import javafx.collections.ObservableList
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.stack.core.NamespaceTable
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
@@ -49,6 +48,8 @@ class AddressSpaceFragmentModel : ViewModel() {
 
         return component.items
     }
+
+    fun readValue(component: AddressSpaceComponent): Variant = component.readValue().get().value
 
     fun disconnect(client: Client) {
         runAsync {

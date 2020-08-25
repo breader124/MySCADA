@@ -4,6 +4,8 @@ import elka.achlebos.model.client.Client
 import elka.achlebos.model.client.ClientsManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
+import elka.achlebos.view.popups.ReadValueError
+import elka.achlebos.view.popups.ReadValueResultDialog
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -23,6 +25,7 @@ class AddressSpaceFragment : Fragment() {
 
     private val connectedServers: ObservableList<Client> = ClientsManager.connected
     private val selectedServer = SimpleObjectProperty<Client?>()
+    private val selectedComponent = SimpleObjectProperty<AddressSpaceComponent?>()
 
     private val alreadyGeneratedTreesMap = mutableMapOf<Client, TreeView<AddressSpaceComponent>>()
     private lateinit var currentlyDisplayedClient: Client
@@ -110,7 +113,18 @@ class AddressSpaceFragment : Fragment() {
                     }
 
                     action {
-                        TODO("Read value placeholder")
+                        selectedComponent.value?.also {
+                            runAsync {
+                                model.readValue(it)
+                            } ui {
+                                if (it.isNotNull) {
+                                    val paramsMapping = mapOf(ReadValueResultDialog::valueRead to it)
+                                    find<ReadValueResultDialog>(paramsMapping).openWindow()
+                                } else {
+                                    find<ReadValueError>().openWindow()
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -126,6 +140,7 @@ class AddressSpaceFragment : Fragment() {
             }
 
             onUserSelect {
+                selectedComponent.value = it
                 readWriteOptionInactive.value = it is AddressSpaceCatalogue
             }
 
