@@ -1,7 +1,7 @@
 package elka.achlebos.view
 
-import elka.achlebos.model.client.Client
-import elka.achlebos.model.client.ClientsManager
+import elka.achlebos.model.server.Server
+import elka.achlebos.model.server.ServerManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.view.popups.ReadValueError
@@ -23,12 +23,12 @@ class AddressSpaceFragment : Fragment() {
     private var noConnectedServerLabel: Label by singleAssign()
     private val noChosenServerLabel = label("There is no chosen server")
 
-    private val connectedServers: ObservableList<Client> = ClientsManager.connected
-    private val selectedServer = SimpleObjectProperty<Client?>()
+    private val connectedServers: ObservableList<Server> = ServerManager.CONNECTED
+    private val selectedServer = SimpleObjectProperty<Server?>()
     private val selectedComponent = SimpleObjectProperty<AddressSpaceComponent?>()
 
-    private val alreadyGeneratedTreesMap = mutableMapOf<Client, TreeView<AddressSpaceComponent>>()
-    private lateinit var currentlyDisplayedClient: Client
+    private val alreadyGeneratedTreesMap = mutableMapOf<Server, TreeView<AddressSpaceComponent>>()
+    private lateinit var currentlyDisplayedServer: Server
 
     private val readWriteOptionInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
     private val disconnectButtonInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
@@ -37,7 +37,7 @@ class AddressSpaceFragment : Fragment() {
         selectedServer.onChange {
             disconnectButtonInactive.value = it == null
             it?.also {
-                currentlyDisplayedClient = it
+                currentlyDisplayedServer = it
                 val treeView = alreadyGeneratedTreesMap.computeIfAbsent(it) { client ->
                     generateTreeFor(client)
                 }
@@ -90,12 +90,12 @@ class AddressSpaceFragment : Fragment() {
         }
     }
 
-    private fun generateTreeFor(client: Client): TreeView<AddressSpaceComponent> {
-        val root: AddressSpaceComponent = client.rootCatalogue
+    private fun generateTreeFor(server: Server): TreeView<AddressSpaceComponent> {
+        val root: AddressSpaceComponent = server.rootCatalogue
         return treeview(TreeItem(root)) {
             populate {
-                if (connectedServers.contains(currentlyDisplayedClient)) {
-                    model.discoverCatalogueContent(it.value, currentlyDisplayedClient.opcUaClient)
+                if (connectedServers.contains(currentlyDisplayedServer)) {
+                    model.discoverCatalogueContent(it.value, currentlyDisplayedServer.opcUaClient)
                 } else {
                     null
                 }
@@ -155,15 +155,15 @@ class AddressSpaceFragment : Fragment() {
     }
 
     private fun performDisconnection() {
-        val currentlyConnectedServers = connectedServers.filter { it !== currentlyDisplayedClient }
+        val currentlyConnectedServers = connectedServers.filter { it !== currentlyDisplayedServer }
 
-        model.disconnect(currentlyDisplayedClient)
+        model.disconnect(currentlyDisplayedServer)
         if (currentlyConnectedServers.isEmpty()) {
             serverTreeBorderPane.center = noConnectedServerLabel
         } else {
-            alreadyGeneratedTreesMap.remove(currentlyDisplayedClient)
+            alreadyGeneratedTreesMap.remove(currentlyDisplayedServer)
         }
         selectedServer.value = null
-        ClientsManager.removeClient(currentlyDisplayedClient)
+        model.updateServerManagerState(currentlyDisplayedServer)
     }
 }

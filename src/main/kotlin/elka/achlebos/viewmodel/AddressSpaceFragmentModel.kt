@@ -1,6 +1,7 @@
 package elka.achlebos.viewmodel
 
-import elka.achlebos.model.client.Client
+import elka.achlebos.model.server.Server
+import elka.achlebos.model.server.ServerManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
@@ -51,13 +52,17 @@ class AddressSpaceFragmentModel : ViewModel() {
 
     fun readValue(component: AddressSpaceComponent): Variant = component.readValue().get().value
 
-    fun disconnect(client: Client) {
+    fun disconnect(server: Server) {
         runAsync {
-            logger.info("To disconnect: $client")
+            logger.info("To disconnect: $server")
 
-            client.disconnect().get()
+            server.disconnect().get()
 
-            logger.info("Disconnected $client")
+            logger.info("Disconnected $server")
         }
+    }
+
+    fun updateServerManagerState(server: Server) {
+        ServerManager.removeServer(server)
     }
 }

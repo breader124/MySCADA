@@ -1,8 +1,8 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.*
-import elka.achlebos.model.client.Client
-import elka.achlebos.model.client.ClientsManager
+import elka.achlebos.model.server.Server
+import elka.achlebos.model.server.ServerManager
 import elka.achlebos.view.popups.ConnectionCreatedDialog
 import tornadofx.*
 import java.time.LocalDate
@@ -12,7 +12,7 @@ class MainViewModel : ViewModel() {
     init {
         subscribe<ConnectionCreatedEvent> { event ->
             find<ConnectionCreatedDialog>().openWindow()
-            ClientsManager.addClient(Client(event.name, event.opcUaClient))
+            ServerManager.addServer(Server(event.name, event.opcUaClient))
         }
     }
 
