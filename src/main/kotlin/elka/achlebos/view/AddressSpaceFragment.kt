@@ -1,11 +1,9 @@
 package elka.achlebos.view
 
-import elka.achlebos.model.server.Server
-import elka.achlebos.model.server.ServerManager
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
-import elka.achlebos.view.popups.ReadValueError
-import elka.achlebos.view.popups.ReadValueResultDialog
+import elka.achlebos.model.server.Server
+import elka.achlebos.model.server.ServerManager
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -30,7 +28,6 @@ class AddressSpaceFragment : Fragment() {
     private val alreadyGeneratedTreesMap = mutableMapOf<Server, TreeView<AddressSpaceComponent>>()
     private lateinit var currentlyDisplayedServer: Server
 
-    private val readWriteOptionInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
     private val disconnectButtonInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
 
     init {
@@ -107,41 +104,21 @@ class AddressSpaceFragment : Fragment() {
             }
 
             contextmenu {
-                item("Read value") {
-                    disableWhen {
-                        readWriteOptionInactive
-                    }
-
+                item("Read...") {
                     action {
-                        selectedComponent.value?.also {
-                            runAsync {
-                                model.readValue(it)
-                            } ui {
-                                if (it.isNotNull) {
-                                    val paramsMapping = mapOf(ReadValueResultDialog::valueRead to it)
-                                    find<ReadValueResultDialog>(paramsMapping).openWindow()
-                                } else {
-                                    find<ReadValueError>().openWindow()
-                                }
-                            }
-                        }
+                        find<ReadDialog>().openWindow()
                     }
                 }
 
-                item("Write value") {
-                    disableWhen {
-                        readWriteOptionInactive
-                    }
-
+                item("Write...") {
                     action {
-                        TODO("Write value placeholder")
+                        find<WriteDialog>().openWindow()
                     }
                 }
             }
 
             onUserSelect {
                 selectedComponent.value = it
-                readWriteOptionInactive.value = it is AddressSpaceCatalogue
             }
 
             fitToParentHeight()
