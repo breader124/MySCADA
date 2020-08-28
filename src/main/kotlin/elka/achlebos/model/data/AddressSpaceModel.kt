@@ -30,12 +30,79 @@ abstract class AddressSpaceComponent(open val nodeId: NodeId,
         throw UnsupportedOperationException("Cannot browse")
     }
 
+    fun readNodeId(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readNodeId()
+    }
+
+    fun readNodeClass(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readNodeClass()
+    }
+
+    fun readBrowseName(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readBrowseName()
+    }
+
+    fun readDisplayName(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readDisplayName()
+    }
+
+    fun readDescription(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readDescription()
+    }
+
+    fun readWriteMask(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readWriteMask()
+    }
+
+    fun readUserWriteMask(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readUserWriteMask()
+    }
+
     open fun readValue(): CompletableFuture<DataValue> {
-        throw UnsupportedOperationException("Cannot add")
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readDataType(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readValueRank(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readArrayDimensions(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readAccessLevel(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readUserAccessLevel(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readMinimumSamplingInterval(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readHistorizing(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
+    }
+
+    open fun readEventNotifier(): CompletableFuture<DataValue> {
+        throw UnsupportedOperationException("Cannot read")
     }
 
     open fun writeValue(value: Number): CompletableFuture<StatusCode> {
-        throw UnsupportedOperationException("Cannot add")
+        throw UnsupportedOperationException("Cannot write")
     }
 
     open fun subscribe(timeInterval: Double,
@@ -51,6 +118,41 @@ class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : Addr
     override fun readValue(): CompletableFuture<DataValue> {
         val variableNode = client.addressSpace.createVariableNode(nodeId)
         return variableNode.readValue()
+    }
+
+    override fun readDataType(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readDataType()
+    }
+
+    override fun readValueRank(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readValueRank()
+    }
+
+    override fun readArrayDimensions(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readArrayDimensions()
+    }
+
+    override fun readAccessLevel(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readAccessLevel()
+    }
+
+    override fun readUserAccessLevel(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readUserAccessLevel()
+    }
+
+    override fun readMinimumSamplingInterval(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readMinimumSamplingInterval()
+    }
+
+    override fun readHistorizing(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createVariableNode(nodeId)
+        return variableNode.readHistorizing()
     }
 
     override fun writeValue(value: Number): CompletableFuture<StatusCode> {
@@ -92,7 +194,9 @@ class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : Addr
     }
 }
 
-class AddressSpaceCatalogue(node: NodeId, name: String, client: OpcUaClient) : AddressSpaceComponent(node, name, client) {
+class AddressSpaceCatalogue(node: NodeId,
+                            name: String,
+                            client: OpcUaClient) : AddressSpaceComponent(node, name, client) {
 
     override val items: ObservableList<AddressSpaceComponent> = observableListOf()
 
@@ -114,5 +218,10 @@ class AddressSpaceCatalogue(node: NodeId, name: String, client: OpcUaClient) : A
                 Unsigned.uint(BrowseResultMask.All.value)
         )
         return client.browse(browseDescription)
+    }
+
+    override fun readEventNotifier(): CompletableFuture<DataValue> {
+        val variableNode = client.addressSpace.createObjectNode(nodeId)
+        return variableNode.readEventNotifier()
     }
 }

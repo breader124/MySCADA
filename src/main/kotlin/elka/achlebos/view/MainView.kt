@@ -10,7 +10,10 @@ class MainView : View("MySCADA") {
     override fun onDock() {
         super.onDock()
         if (viewModel.checkIfNeedToCreateNewCert()) {
-            find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
+            find<CertificateCreationView>().openModal(
+                    stageStyle = StageStyle.UNDECORATED,
+                    escapeClosesWindow = false
+            )
         }
     }
 
@@ -24,12 +27,18 @@ class MainView : View("MySCADA") {
 
             menu("Certificate") {
                 item("Create").action {
-                    find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
+                    find<CertificateCreationView>().openModal(
+                            stageStyle = StageStyle.UNDECORATED,
+                            escapeClosesWindow = true
+                    )
                 }
 
                 item("Remove").action {
                     viewModel.switchCertificateAlreadyExistsToFalse()
-                    find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
+                    find<CertificateCreationView>().openModal(
+                            stageStyle = StageStyle.UNDECORATED,
+                            escapeClosesWindow = false
+                    )
                 }
             }
         }
