@@ -28,7 +28,8 @@ class AddressSpaceFragmentModel : ViewModel() {
             references?.forEach { reference ->
                 val nodeClass = reference.nodeClass
                 val nodeName = reference.displayName.text ?: ""
-                val nodeIdOpt = reference.nodeId.local(NamespaceTable())
+                val emptyRemoteNamespaceTable = NamespaceTable()
+                val nodeIdOpt = reference.nodeId.local(emptyRemoteNamespaceTable)
                 nodeIdOpt.ifPresent { nodeId ->
                     if (nodeClass == NodeClass.Object) {
                         val discoveredCatalogue = AddressSpaceCatalogue(nodeId, nodeName, currentClient)

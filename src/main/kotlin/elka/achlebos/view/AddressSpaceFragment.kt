@@ -2,9 +2,11 @@ package elka.achlebos.view
 
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
+import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
+import elka.achlebos.viewmodel.CatalogueReadOption
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
@@ -106,7 +108,16 @@ class AddressSpaceFragment : Fragment() {
             contextmenu {
                 item("Read...") {
                     action {
-                        find<ReadDialog>().openWindow()
+                        when (selectedComponent.value) {
+                            is AddressSpaceNode -> {
+                                val paramMappings = mapOf(ReadNodeDialog::component to selectedComponent.value)
+                                find<ReadNodeDialog>(paramMappings).openWindow()
+                            }
+                            is AddressSpaceComponent -> {
+                                val paramMappings = mapOf(ReadCatalogueDialog::component to selectedComponent.value)
+                                find<ReadCatalogueDialog>(paramMappings).openWindow()
+                            }
+                        }
                     }
                 }
 

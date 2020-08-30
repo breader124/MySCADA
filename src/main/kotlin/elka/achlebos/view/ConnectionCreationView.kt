@@ -4,6 +4,7 @@ import elka.achlebos.model.connection.Connection
 import elka.achlebos.view.popups.ConnectionRefusedDialog
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
 import tornadofx.*
+import java.util.logging.Logger
 
 class ConnectionCreationView : View("New connection") {
     private val model: ConnectionCreationViewModel by inject()
@@ -18,6 +19,8 @@ class ConnectionCreationView : View("New connection") {
                     model.discover()
                 } ui {
                     model.discoveredEndpoints.addAll(it)
+                } fail {
+                    model.handleDiscoveryException(it)
                 }
             }
         }
@@ -56,7 +59,7 @@ class ConnectionCreationView : View("New connection") {
             runAsync {
                 model.connect()
             } fail {
-                find<ConnectionRefusedDialog>().openWindow()
+                model.handleConnectException(it)
             }
             close()
         }

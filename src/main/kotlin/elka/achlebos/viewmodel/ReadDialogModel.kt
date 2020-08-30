@@ -5,35 +5,68 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant
 import tornadofx.*
 
 class ReadDialogModel : ViewModel() {
-    fun readNodeId(component: AddressSpaceComponent): Variant = component.readNodeId().get().value
+    private fun readNodeId(component: AddressSpaceComponent): Variant = component.readNodeId().get().value
 
-    fun readNodeClass(component: AddressSpaceComponent): Variant = component.readNodeClass().get().value
+    private fun readNodeClass(component: AddressSpaceComponent): Variant = component.readNodeClass().get().value
 
-    fun readBrowseName(component: AddressSpaceComponent): Variant = component.readBrowseName().get().value
+    private fun readBrowseName(component: AddressSpaceComponent): Variant = component.readBrowseName().get().value
 
-    fun readDisplayName(component: AddressSpaceComponent): Variant = component.readDisplayName().get().value
+    private fun readDisplayName(component: AddressSpaceComponent): Variant = component.readDisplayName().get().value
 
-    fun readDescription(component: AddressSpaceComponent): Variant = component.readDescription().get().value
+    private fun readDescription(component: AddressSpaceComponent): Variant = component.readDescription().get().value
 
-    fun readWriteMask(component: AddressSpaceComponent): Variant = component.readWriteMask().get().value
+    private fun readWriteMask(component: AddressSpaceComponent): Variant = component.readWriteMask().get().value
 
-    fun readUserWriteMask(component: AddressSpaceComponent): Variant = component.readUserWriteMask().get().value
+    private fun readUserWriteMask(component: AddressSpaceComponent): Variant = component.readUserWriteMask().get().value
 
-    fun readValue(component: AddressSpaceComponent): Variant = component.readValue().get().value
+    private fun readValue(component: AddressSpaceComponent): Variant = component.readValue().get().value
 
-    fun readDataType(component: AddressSpaceComponent): Variant = component.readDataType().get().value
+    private fun readDataType(component: AddressSpaceComponent): Variant = component.readDataType().get().value
 
-    fun readValueRank(component: AddressSpaceComponent): Variant = component.readValueRank().get().value
+    private fun readValueRank(component: AddressSpaceComponent): Variant = component.readValueRank().get().value
 
-    fun readArrayDimensions(component: AddressSpaceComponent): Variant = component.readArrayDimensions().get().value
+    private fun readArrayDimensions(component: AddressSpaceComponent): Variant = component.readArrayDimensions().get().value
 
-    fun readAccessLevel(component: AddressSpaceComponent): Variant = component.readAccessLevel().get().value
+    private fun readAccessLevel(component: AddressSpaceComponent): Variant = component.readAccessLevel().get().value
 
-    fun readUserAccessLevel(component: AddressSpaceComponent): Variant = component.readUserAccessLevel().get().value
+    private fun readUserAccessLevel(component: AddressSpaceComponent): Variant = component.readUserAccessLevel().get().value
 
-    fun readMinimumSamplingInterval(component: AddressSpaceComponent): Variant = component.readMinimumSamplingInterval().get().value
+    private fun readMinimumSamplingInterval(component: AddressSpaceComponent): Variant = component.readMinimumSamplingInterval().get().value
 
-    fun readHistorizing(component: AddressSpaceComponent): Variant = component.readHistorizing().get().value
+    private fun readHistorizing(component: AddressSpaceComponent): Variant = component.readHistorizing().get().value
 
-    fun readEventNotifier(component: AddressSpaceComponent): Variant = component.readEventNotifier().get().value
+    private fun readEventNotifier(component: AddressSpaceComponent): Variant = component.readEventNotifier().get().value
+
+    fun performNodeRead(component: AddressSpaceComponent, option: NodeReadOption): Variant {
+        return when (option) {
+            NodeReadOption.NODE_ID -> readNodeId(component)
+            NodeReadOption.NODE_CLASS -> readNodeClass(component)
+            NodeReadOption.BROWSE_NAME -> readBrowseName(component)
+            NodeReadOption.DISPLAY_NAME -> readDisplayName(component)
+            NodeReadOption.DESCRIPTION -> readDescription(component)
+            NodeReadOption.WRITE_MASKS -> readWriteMask(component)
+            NodeReadOption.USER_WRITE_MASK -> readUserWriteMask(component)
+            NodeReadOption.VALUE -> readValue(component)
+            NodeReadOption.DATA_TYPE -> readDataType(component)
+            NodeReadOption.VALUE_RANK -> readValueRank(component)
+            NodeReadOption.ARRAY_DIMENSION -> readArrayDimensions(component)
+            NodeReadOption.ACCESS_LEVEL -> readAccessLevel(component)
+            NodeReadOption.USER_ACCESS_LEVEL -> readUserAccessLevel(component)
+            NodeReadOption.MINIMUM_SAMPLING_INTERVAL -> readMinimumSamplingInterval(component)
+            NodeReadOption.HISTORIZING -> readHistorizing(component)
+        }
+    }
+
+    fun performCatalogueRead(component: AddressSpaceComponent, option: CatalogueReadOption): Variant {
+        return when (option) {
+            CatalogueReadOption.NODE_ID -> readNodeId(component)
+            CatalogueReadOption.NODE_CLASS -> readNodeClass(component)
+            CatalogueReadOption.BROWSE_NAME -> readBrowseName(component)
+            CatalogueReadOption.DISPLAY_NAME -> readDisplayName(component)
+            CatalogueReadOption.DESCRIPTION -> readDescription(component)
+            CatalogueReadOption.WRITE_MASKS -> readWriteMask(component)
+            CatalogueReadOption.USER_WRITE_MASK -> readUserWriteMask(component)
+            CatalogueReadOption.EVENT_NOTIFIER -> readEventNotifier(component)
+        }
+    }
 }
