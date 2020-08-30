@@ -36,17 +36,18 @@ class MainView : View("MySCADA") {
     }
 
     private fun openCertificateCreationWindow() {
-        val stage = find<CertificateCreationView>().openModal(
-                stageStyle = StageStyle.UTILITY,
-                escapeClosesWindow = false
+        openInternalWindow<CertificateCreationView>(
+                modal = true,
+                escapeClosesWindow = false,
+                closeButton = false
         )
-
-        stage?.setOnCloseRequest {
-            it.consume()
-        }
     }
 
     private fun openCloseableCertificateCreationWindow() {
-        find<CertificateCreationView>().openModal(stageStyle = StageStyle.UTILITY)
+        openInternalWindow<CertificateCreationView>(
+                modal = true,
+                escapeClosesWindow = true,
+                closeButton = true
+        )
     }
 }

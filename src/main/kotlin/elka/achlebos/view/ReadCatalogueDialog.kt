@@ -16,6 +16,10 @@ class ReadCatalogueDialog : View() {
 
     private val readResultProperty = SimpleStringProperty()
 
+    init {
+        title = component.name
+    }
+
     override val root = form {
         fieldset {
             combobox(selectedOption, readOptions)

@@ -16,18 +16,28 @@ class ReadNodeDialog : View() {
 
     private val readResultProperty = SimpleStringProperty()
 
+    init {
+        title = component.name
+    }
+
     override val root = form {
         fieldset {
             combobox(selectedOption, readOptions)
 
-            textarea(readResultProperty)
+            textarea(readResultProperty) {
+                isWrapText = true
+                isEditable = false
+            }
 
             button("Read") {
                 action {
                     runAsync {
                         model.performNodeRead(component, selectedOption.value)
                     } ui {
-                        readResultProperty.value = it.value?.toString() ?: "No value"
+                        readResultProperty.value = when (it.value) {
+                            is Array<*> -> (it.value as Array<*>).contentDeepToString()
+                            else -> it.value?.toString() ?: "No value"
+                        }
                     }
                 }
             }
