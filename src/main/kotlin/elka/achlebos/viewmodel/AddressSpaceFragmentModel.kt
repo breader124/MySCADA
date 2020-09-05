@@ -5,10 +5,10 @@ import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
-import elka.achlebos.view.popup.TimeoutExceptionDialog
 import javafx.collections.ObservableList
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.stack.core.NamespaceTable
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
@@ -49,6 +49,16 @@ class AddressSpaceFragmentModel : ViewModel() {
         }
 
         return component.items
+    }
+
+    fun subscribe(component: AddressSpaceComponent) {
+        runAsync {
+            component.subscribe(1000.0) { monitoredItem, id: Int ->
+                monitoredItem.setValueConsumer { _, data: DataValue ->
+                    println(data.value.value)
+                }
+            }.get()
+        }
     }
 
     fun disconnect(server: Server) {

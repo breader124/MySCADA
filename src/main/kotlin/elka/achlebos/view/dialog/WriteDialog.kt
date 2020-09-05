@@ -1,4 +1,4 @@
-package elka.achlebos.view
+package elka.achlebos.view.dialog
 
 import tornadofx.*
 

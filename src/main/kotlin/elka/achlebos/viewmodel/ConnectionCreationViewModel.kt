@@ -3,7 +3,7 @@ package elka.achlebos.viewmodel
 import elka.achlebos.model.ConnectionCreatedEvent
 import elka.achlebos.model.connection.Connection
 import elka.achlebos.view.popup.ConnectionRefusedDialog
-import elka.achlebos.view.popup.TimeoutExceptionDialog
+import elka.achlebos.view.popup.ConnectionCannotBeEstablished
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
@@ -55,7 +55,10 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     fun handleDiscoveryException(exc: Throwable) {
         when (exc) {
-            is ExecutionException -> find<TimeoutExceptionDialog>().openWindow()
+            is ExecutionException -> {
+                find<ConnectionCannotBeEstablished>().openWindow()
+                logger.severe(exc.localizedMessage)
+            }
             else -> logger.severe(exc.localizedMessage)
         }
     }

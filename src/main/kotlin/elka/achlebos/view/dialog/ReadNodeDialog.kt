@@ -1,4 +1,4 @@
-package elka.achlebos.view
+package elka.achlebos.view.dialog
 
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.viewmodel.NodeReadOption

@@ -5,9 +5,9 @@ import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
-import elka.achlebos.view.ReadCatalogueDialog
-import elka.achlebos.view.ReadNodeDialog
-import elka.achlebos.view.WriteDialog
+import elka.achlebos.view.dialog.ReadCatalogueDialog
+import elka.achlebos.view.dialog.ReadNodeDialog
+import elka.achlebos.view.dialog.WriteDialog
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -33,6 +33,7 @@ class AddressSpaceFragment : Fragment() {
     private lateinit var currentlyDisplayedServer: Server
 
     private val disconnectButtonInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
+    private val subscribeOptionInactive: SimpleBooleanProperty = SimpleBooleanProperty()
 
     init {
         selectedServer.onChange {
@@ -128,10 +129,21 @@ class AddressSpaceFragment : Fragment() {
                         find<WriteDialog>().openWindow()
                     }
                 }
+
+                item("Subscribe...") {
+                    disableWhen(subscribeOptionInactive)
+
+                    action {
+                        selectedComponent.value?.also {
+                            model.subscribe(it)
+                        }
+                    }
+                }
             }
 
             onUserSelect {
                 selectedComponent.value = it
+                subscribeOptionInactive.value = it !is AddressSpaceNode
             }
 
             fitToParentHeight()

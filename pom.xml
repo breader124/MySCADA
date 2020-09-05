@@ -48,20 +48,21 @@
             <version>${kotlin.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/no.tornado/tornadofx -->
+        <!-- tornadofx dependency - GUI framework -->
         <dependency>
             <groupId>no.tornado</groupId>
             <artifactId>tornadofx</artifactId>
             <version>1.7.20</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.eclipse.milo/sdk-client -->
+        <!-- eclipse milo dependency - library to handle opc ua interaction -->
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-client</artifactId>
             <version>0.3.8</version>
         </dependency>
 
+        <!-- start of test dependencies section -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -81,6 +82,14 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter.version}</version>
             <scope>test</scope>
+        </dependency>
+        <!-- end of test dependencies section -->
+
+        <!-- JFreeChart - charts library --><!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.0</version>
         </dependency>
     </dependencies>
 
