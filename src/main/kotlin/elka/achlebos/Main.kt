@@ -10,3 +10,8 @@ class Main : App(MainView::class) {
         super.start(stage)
     }
 }
+
+// entry point to application built with maven assembly plugin
+fun main(args: Array<String>) {
+    launch<Main>(args)
+}
