@@ -1,7 +1,7 @@
-package elka.achlebos.view.popups
+package elka.achlebos.view.popup
 
 import tornadofx.*
 
-class CertificateCreationErrorDialog : Fragment() {
+class ConnectionCreatedDialog : Fragment() {
     override val root = label("Connection created successfully!")
 }

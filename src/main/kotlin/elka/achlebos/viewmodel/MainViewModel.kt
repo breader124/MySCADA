@@ -3,7 +3,7 @@ package elka.achlebos.viewmodel
 import elka.achlebos.model.*
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
-import elka.achlebos.view.popups.ConnectionCreatedDialog
+import elka.achlebos.view.popup.ConnectionCreatedDialog
 import tornadofx.*
 import java.time.LocalDate
 import java.time.format.DateTimeParseException;

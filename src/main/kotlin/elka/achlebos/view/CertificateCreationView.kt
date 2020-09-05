@@ -2,7 +2,7 @@ package elka.achlebos.view
 
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
-import elka.achlebos.view.popups.CertificateCreationErrorDialog
+import elka.achlebos.view.popup.CertificateCreationErrorDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty

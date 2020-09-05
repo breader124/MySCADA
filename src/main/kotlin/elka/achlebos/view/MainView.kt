@@ -1,5 +1,6 @@
 package elka.achlebos.view
 
+import elka.achlebos.view.fragment.AddressSpaceFragment
 import elka.achlebos.viewmodel.MainViewModel
 import javafx.stage.StageStyle
 import tornadofx.*

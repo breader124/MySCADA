@@ -2,9 +2,8 @@ package elka.achlebos.viewmodel
 
 import elka.achlebos.model.ConnectionCreatedEvent
 import elka.achlebos.model.connection.Connection
-import elka.achlebos.view.ConnectionCreationView
-import elka.achlebos.view.popups.ConnectionRefusedDialog
-import elka.achlebos.view.popups.TimeoutExceptionDialog
+import elka.achlebos.view.popup.ConnectionRefusedDialog
+import elka.achlebos.view.popup.TimeoutExceptionDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList

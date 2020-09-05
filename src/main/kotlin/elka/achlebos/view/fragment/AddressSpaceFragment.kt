@@ -1,12 +1,14 @@
-package elka.achlebos.view
+package elka.achlebos.view.fragment
 
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
+import elka.achlebos.view.ReadCatalogueDialog
+import elka.achlebos.view.ReadNodeDialog
+import elka.achlebos.view.WriteDialog
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
-import elka.achlebos.viewmodel.CatalogueReadOption
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList

@@ -1,4 +1,4 @@
-package elka.achlebos.view.popups
+package elka.achlebos.view.popup
 
 import tornadofx.*
 

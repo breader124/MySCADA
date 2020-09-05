@@ -5,6 +5,7 @@ import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
+import elka.achlebos.view.popup.TimeoutExceptionDialog
 import javafx.collections.ObservableList
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.stack.core.NamespaceTable
@@ -19,7 +20,12 @@ class AddressSpaceFragmentModel : ViewModel() {
         runAsync {
             val browseResult: BrowseResult
             if (component is AddressSpaceCatalogue) {
-                browseResult = component.browse().get()
+                try {
+                    browseResult = component.browse().get()
+                } catch(exc: Exception) {
+                    // TODO("handle timeout exceptions during discovering content of catalogue")
+                    return@runAsync
+                }
             } else {
                 return@runAsync
             }

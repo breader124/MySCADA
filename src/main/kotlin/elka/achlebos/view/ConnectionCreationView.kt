@@ -1,7 +1,7 @@
 package elka.achlebos.view
 
 import elka.achlebos.model.connection.Connection
-import elka.achlebos.view.popups.ConnectionRefusedDialog
+import elka.achlebos.view.popup.ConnectionRefusedDialog
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
 import tornadofx.*
 import java.util.logging.Logger
