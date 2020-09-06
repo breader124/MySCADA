@@ -85,7 +85,7 @@
         </dependency>
         <!-- end of test dependencies section -->
 
-        <!-- JFreeChart - charts library --><!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+        <!-- JFreeChart - charts library -->
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>

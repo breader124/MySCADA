@@ -17,6 +17,7 @@ import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
 import javafx.scene.layout.BorderPane
 import tornadofx.*
+import java.lang.Exception
 
 class AddressSpaceFragment : Fragment() {
 
@@ -84,7 +85,13 @@ class AddressSpaceFragment : Fragment() {
                 }
 
                 action {
-                    performDisconnection()
+                    runAsync {
+                        performDisconnection()
+                    } success {
+                        deleteDisconnectedItemsFromFragment()
+                    } fail {
+                        model.handleDisconnectingException()
+                    }
                 }
 
                 fitToParentWidth()
@@ -97,7 +104,12 @@ class AddressSpaceFragment : Fragment() {
         return treeview(TreeItem(root)) {
             populate {
                 if (connectedServers.contains(currentlyDisplayedServer)) {
-                    model.discoverCatalogueContent(it.value, currentlyDisplayedServer.opcUaClient)
+                    try {
+                        model.discoverCatalogueContent(it.value, currentlyDisplayedServer.opcUaClient)
+                    } catch (exc: Exception) {
+                        model.handleDiscoveringCatalogueContentException()
+                        null
+                    }
                 } else {
                     null
                 }
@@ -135,7 +147,11 @@ class AddressSpaceFragment : Fragment() {
 
                     action {
                         selectedComponent.value?.also {
-                            model.subscribe(it)
+                            runAsync {
+                                model.subscribe(it)
+                            } fail {
+                                model.handleSubscribeException()
+                            }
                         }
                     }
                 }
@@ -156,10 +172,8 @@ class AddressSpaceFragment : Fragment() {
         root.prefWidthProperty().bind(parentWindowWidthProperty)
     }
 
-    private fun performDisconnection() {
+    private fun deleteDisconnectedItemsFromFragment() {
         val currentlyConnectedServers = connectedServers.filter { it !== currentlyDisplayedServer }
-
-        model.disconnect(currentlyDisplayedServer)
         if (currentlyConnectedServers.isEmpty()) {
             serverTreeBorderPane.center = noConnectedServerLabel
         } else {
@@ -167,5 +181,9 @@ class AddressSpaceFragment : Fragment() {
         }
         selectedServer.value = null
         model.updateServerManagerState(currentlyDisplayedServer)
+    }
+
+    private fun performDisconnection() {
+        model.disconnect(currentlyDisplayedServer)
     }
 }

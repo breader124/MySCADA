@@ -20,6 +20,8 @@ class MainViewModel : ViewModel() {
         preferences {
             putBoolean("isCertificateAlreadyExists", false)
         }
+
+        log.info("Set 'isCertificateAlreadyExists' parameter to false")
     }
 
     fun checkIfNeedToCreateNewCert(): Boolean {
@@ -30,6 +32,9 @@ class MainViewModel : ViewModel() {
 
             needToCreateNewCert = (!isCertificateAlreadyExists || !isCertificateNotExpired)
         }
+
+        log.info("Checking if there is need to create new cert with final result: $needToCreateNewCert")
+
         return needToCreateNewCert
     }
 
@@ -43,6 +48,8 @@ class MainViewModel : ViewModel() {
                 // suppress exception
             }
         }
+
+        log.info("Checking if certificate is not expired with final result: $isCertificateNotExpired")
 
         return isCertificateNotExpired
     }

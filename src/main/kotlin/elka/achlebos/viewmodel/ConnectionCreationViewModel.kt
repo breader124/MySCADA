@@ -2,8 +2,8 @@ package elka.achlebos.viewmodel
 
 import elka.achlebos.model.ConnectionCreatedEvent
 import elka.achlebos.model.connection.Connection
-import elka.achlebos.view.popup.ConnectionRefusedDialog
 import elka.achlebos.view.popup.ConnectionCannotBeEstablished
+import elka.achlebos.view.popup.ConnectionRefusedDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
@@ -14,12 +14,8 @@ import tornadofx.*
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.ExecutionException
-import java.util.logging.Logger
 
 class ConnectionCreationViewModel : ItemViewModel<Connection>() {
-    companion object {
-        val logger: Logger = Logger.getLogger(ConnectionCreationViewModel::class.simpleName)
-    }
 
     var discoveredEndpoints: ObservableList<EndpointDescription> = observableListOf()
 
@@ -31,12 +27,18 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     fun clearDiscoveredEndpoints() {
         discoveredEndpoints.clear()
+
+        log.info("Cleared previously discovered endpoints")
     }
 
     fun discover(): List<EndpointDescription> {
         return item
                 .discoverEndpoints()
-                .exceptionally { throw it }
+                .whenComplete{ _, _ -> log.info("Successfully discovered endpoints") }
+                .exceptionally {
+                    log.severe("Encountered problem discovering endpoints")
+                    throw it
+                }
                 .get()
     }
 
@@ -48,22 +50,31 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
         ).whenComplete { client: UaClient?, _: Throwable? ->
             val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
             fire(ConnectionCreatedEvent(name, client as OpcUaClient))
+
+            log.info("Successfully connected with: $name")
         }.exceptionally {
+            val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
+
+            log.severe("Encountered problem connecting with $name")
+
             throw it
         }.get()
     }
 
     fun handleDiscoveryException(exc: Throwable) {
+        log.info("Handling discovery exception")
+
         when (exc) {
             is ExecutionException -> {
                 find<ConnectionCannotBeEstablished>().openWindow()
-                logger.severe(exc.localizedMessage)
+                log.severe(exc.localizedMessage)
             }
-            else -> logger.severe(exc.localizedMessage)
+            else -> log.severe(exc.localizedMessage)
         }
     }
 
     fun handleConnectException(exc: Throwable) {
+        log.info("Handling connecting exception")
         find<ConnectionRefusedDialog>().openWindow()
     }
 }

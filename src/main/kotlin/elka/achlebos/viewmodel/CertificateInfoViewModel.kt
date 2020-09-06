@@ -38,6 +38,13 @@ class CertificateInfoViewModel : ItemViewModel<X509CertificateInfo>() {
 
             val expirationDate = LocalDate.now().plus(item.validityPeriod)
             put("expirationDate", expirationDate.toString())
+
+            log.info("""
+                Stored certificate info in preferences with given parameters:
+                    certificateName: ${item.commonName}
+                    applicationUri: ${item.applicationUri}
+                    expirationDate: $expirationDate
+            """.trimIndent())
         }
     }
 }

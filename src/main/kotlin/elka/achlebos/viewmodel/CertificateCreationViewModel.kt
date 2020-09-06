@@ -11,5 +11,9 @@ import java.time.LocalDate
 import kotlin.streams.toList
 
 class CertificateCreationViewModel: ItemViewModel<X509CertificateManager>() {
-    fun createCertificate(info: X509CertificateInfo, certName: String) = item.create(info, certName)
+    fun createCertificate(info: X509CertificateInfo, certName: String) {
+        item.create(info, certName)
+
+        log.info("Created certificate with name: $certName and info: $info")
+    }
 }
