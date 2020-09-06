@@ -65,9 +65,9 @@ class AddressSpaceFragmentModel : ViewModel() {
     }
 
     fun subscribe(component: AddressSpaceComponent) {
-        val onItemCreated = { monitoredItem: UaMonitoredItem, _: Int ->
+        val onItemCreated = { monitoredItem: UaMonitoredItem, id: Int ->
             monitoredItem.setValueConsumer { _, data: DataValue ->
-                println(data.value.value)
+                println("${monitoredItem.hashCode()}: ${data.value.value}")
             }
         }
         component.subscribe(1000.0, onItemCreated)

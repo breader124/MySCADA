@@ -1,0 +1,17 @@
+certyfikaty:
+	sprawdzanie, czy certyfikat nie wygasł <3
+	usuwanie i tworzenie nowych certyfikatów na żądanie <3
+
+zarządzanie połączeniami:
+	przechwycenie zdarzenia utworzenia nowego połączenia <3
+	umożliwienie przeglądania przestrzeni adresowej połączonych serwerów <3
+	umożliwienie rozłączenia się z serwerem	<3
+	umożliwienie pojedynczego reada na zmiennej <3
+	umożliwienie zapisu nowej wartości na zmiennej
+	umożliwienie zasubskrybowania zmiennej i wyświetlanie jej wartości na wykresie
+
+WALIDACJA
+LAYOUT
+STORE STATE OF APPLICATION
+
+TESTY!!!!!!!!!!!!
