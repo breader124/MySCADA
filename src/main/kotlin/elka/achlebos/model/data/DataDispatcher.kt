@@ -6,23 +6,18 @@ import java.util.logging.Logger
 object DataDispatcher : Observable() {
     private val log = Logger.getLogger(DataDispatcher::class.simpleName)
 
-    private val queuesMap: MutableMap<Int, Queue<Any>> = mutableMapOf()
+    private val queuesMap: MutableMap<UUID, Queue<Any>> = mutableMapOf()
     private val observers: MutableList<Observer> = mutableListOf()
-    private val changedQueues: MutableSet<Int> = mutableSetOf()
+    private val changedQueues: MutableSet<UUID> = mutableSetOf()
 
-    val nextQueueNum: Int
-        get() = queuesMap.size
-
-    fun allocateNewQueue(): Int {
+    fun allocateNewQueue(queueNum: UUID) {
         val underlyingQueue = LinkedList<Any>()
-        queuesMap[nextQueueNum] = underlyingQueue
+        queuesMap[queueNum] = underlyingQueue
 
-        log.info("Allocated new queue with num: ${nextQueueNum - 1}")
-
-        return nextQueueNum - 1
+        log.info("Allocated new queue with num: $queueNum")
     }
 
-    fun addDataToQueue(queueNum: Int, data: Any) {
+    fun addDataToQueue(queueNum: UUID, data: Any) {
         log.info("Data received for queue: $queueNum = $data")
 
         queuesMap[queueNum]?.add(data)
@@ -32,7 +27,7 @@ object DataDispatcher : Observable() {
         changedQueues.remove(queueNum)
     }
 
-    fun fetchDataFromQueue(queueNum: Int): List<Any> {
+    fun fetchDataFromQueue(queueNum: UUID): List<Any> {
         val fetchedData = LinkedList<Any>()
         queuesMap[queueNum]?.also {
             it.forEach { _ -> fetchedData.add(it.poll()) }
@@ -40,7 +35,7 @@ object DataDispatcher : Observable() {
         return fetchedData
     }
 
-    fun removeQueue(queueNum: Int) {
+    fun removeQueue(queueNum: UUID) {
         queuesMap.remove(queueNum)
         log.info("Requested to remove queue with num: $queueNum")
     }

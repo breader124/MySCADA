@@ -11,7 +11,7 @@ import org.jfree.data.xy.XYSeriesCollection
 import tornadofx.*
 import java.util.*
 
-class ChartFragment(dataQueueNum: Int) : Fragment() {
+class ChartFragment(dataQueueNum: UUID) : Fragment() {
     private val viewModel = ChartFragmentViewModel(dataQueueNum)
 
     private var chartPanel: ChartPanel by singleAssign()

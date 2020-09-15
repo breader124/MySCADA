@@ -1,6 +1,7 @@
 package elka.achlebos.view
 
 import elka.achlebos.model.SubscriptionCreatedEvent
+import elka.achlebos.model.SubscriptionRemoveRequestEvent
 import elka.achlebos.view.fragment.AddressSpaceFragment
 import elka.achlebos.view.fragment.ChartFragment
 import elka.achlebos.viewmodel.MainViewModel
@@ -8,6 +9,7 @@ import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.stage.StageStyle
 import tornadofx.*
+import java.util.*
 
 
 class MainView : View("MySCADA") {
@@ -16,7 +18,7 @@ class MainView : View("MySCADA") {
 
     init {
         subscribe<SubscriptionCreatedEvent> {
-            addNewChartToTabPane(it.queueNum)
+            addNewChartToTabPane(it.queueNum, it.componentName)
         }
     }
 
@@ -63,11 +65,17 @@ class MainView : View("MySCADA") {
         )
     }
 
-    private fun addNewChartToTabPane(dataQueueNum: Int) {
+    private fun addNewChartToTabPane(dataQueueNum: UUID, tabName: String) {
         val chartTabFragment = ChartFragment(dataQueueNum)
         var chartTab = Tab()
         tabpane {
-            chartTab = tab(chartTabFragment)
+            chartTab = tab(chartTabFragment) {
+                text = tabName
+
+                setOnCloseRequest {
+                    fire(SubscriptionRemoveRequestEvent(dataQueueNum))
+                }
+            }
         }
         chartTabPane.tabs.add(chartTab)
         chartTab.select()

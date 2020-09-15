@@ -1,10 +1,8 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.SubscriptionCreatedEvent
-import elka.achlebos.model.data.AddressSpaceCatalogue
-import elka.achlebos.model.data.AddressSpaceComponent
-import elka.achlebos.model.data.AddressSpaceNode
-import elka.achlebos.model.data.DataDispatcher
+import elka.achlebos.model.SubscriptionRemoveRequestEvent
+import elka.achlebos.model.data.*
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
 import elka.achlebos.view.popup.ErrorCreatingSubscription
@@ -18,12 +16,20 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
 import tornadofx.*
+import java.util.*
 
 class AddressSpaceFragmentModel : ViewModel() {
 
+    private val activeSubscriptions: MutableMap<UUID, AddressSpaceComponent> = mutableMapOf()
+
+    init {
+        subscribe<SubscriptionRemoveRequestEvent> {
+            unsubscribe(it.queueNum)
+        }
+    }
+
     fun discoverCatalogueContent(component: AddressSpaceComponent,
                                  currentClient: OpcUaClient): ObservableList<AddressSpaceComponent>? {
-
         runAsync {
             val browseResult: BrowseResult
             if (component is AddressSpaceCatalogue) {
@@ -67,21 +73,33 @@ class AddressSpaceFragmentModel : ViewModel() {
     }
 
     fun subscribe(component: AddressSpaceComponent) {
+        val subscriptionUUID = UUID.randomUUID()
         val onItemCreated = { monitoredItem: UaMonitoredItem, id: Int ->
-            val allocatedQueueNum = DataDispatcher.allocateNewQueue()
+            DataDispatcher.allocateNewQueue(subscriptionUUID)
             monitoredItem.setValueConsumer { _, data: DataValue ->
-                DataDispatcher.addDataToQueue(allocatedQueueNum, data.value.value)
+                DataDispatcher.addDataToQueue(subscriptionUUID, data.value.value)
             }
         }
-        component.subscribe(1000.0, onItemCreated)
+        val createdMonitoredItems = component.subscribe(subscriptionUUID, onItemCreated)
                 .exceptionally {
                     log.severe("Encountered problem creating subscription for ${component.name}")
                     throw it
                 }
                 .get()
+        createdMonitoredItems.forEach { item -> SubscriptionManager.registerMonitoredItem(subscriptionUUID, item) }
+        activeSubscriptions[subscriptionUUID] = component
 
         log.info("Successfully created monitored item for: ${component.name}")
-        fire(SubscriptionCreatedEvent(DataDispatcher.nextQueueNum - 1))
+
+        fire(SubscriptionCreatedEvent(subscriptionUUID, component.name))
+    }
+
+    private fun unsubscribe(uuid: UUID) {
+        runAsync {
+            activeSubscriptions[uuid]?.unsubscribe(uuid)?.get()
+            activeSubscriptions.remove(uuid)
+            log.info("Successfully unsubscribed for UUID: $uuid")
+        }
     }
 
     fun disconnect(server: Server) {

@@ -3,6 +3,7 @@ package elka.achlebos.model.data
 import javafx.collections.ObservableList
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription
 import org.eclipse.milo.opcua.stack.core.AttributeId
 import org.eclipse.milo.opcua.stack.core.Identifiers
 import org.eclipse.milo.opcua.stack.core.types.builtin.*
@@ -10,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned
 import org.eclipse.milo.opcua.stack.core.types.enumerated.*
 import org.eclipse.milo.opcua.stack.core.types.structured.*
 import tornadofx.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 abstract class AddressSpaceComponent(open val nodeId: NodeId,
@@ -105,8 +107,12 @@ abstract class AddressSpaceComponent(open val nodeId: NodeId,
         throw UnsupportedOperationException("Cannot write")
     }
 
-    open fun subscribe(timeInterval: Double,
+    open fun subscribe(uuid: UUID,
                        onItemCreated: (UaMonitoredItem, Int) -> Unit): CompletableFuture<List<UaMonitoredItem>> {
+        throw UnsupportedOperationException("Cannot subscribe")
+    }
+
+    open fun unsubscribe(uuid: UUID): CompletableFuture<UaSubscription>? {
         throw UnsupportedOperationException("Cannot subscribe")
     }
 }
@@ -161,11 +167,15 @@ class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : Addr
         return client.writeValue(nodeId, dataValue)
     }
 
-    override fun subscribe(timeInterval: Double,
+    override fun subscribe(uuid: UUID,
                            onItemCreated: (UaMonitoredItem, Int) -> Unit): CompletableFuture<List<UaMonitoredItem>> {
 
-        val subscription = client.subscriptionManager.createSubscription(timeInterval)
+        val timeIntervalMs = 1000.0
+        val subscription = client.subscriptionManager.createSubscription(timeIntervalMs)
+
         return subscription.thenCompose {
+            SubscriptionManager.registerSubscription(uuid, it)
+
             val readValue = ReadValueId(
                     nodeId,
                     AttributeId.Value.uid(),
@@ -175,7 +185,7 @@ class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : Addr
             val clientHandle = it.nextClientHandle()
             val params = MonitoringParameters(
                     clientHandle,
-                    timeInterval,
+                    timeIntervalMs,
                     null,
                     Unsigned.uint(100),
                     true
@@ -190,6 +200,15 @@ class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : Addr
                     arrayListOf(request),
                     onItemCreated
             )
+        }
+    }
+
+    override fun unsubscribe(uuid: UUID): CompletableFuture<UaSubscription>? {
+        val sub = SubscriptionManager.getSubscriptionIdForUUID(uuid)
+        val monitoredItem = SubscriptionManager.getMonitoredItemForUUID(uuid)
+        val deleteMonitoredItemRequest = sub?.deleteMonitoredItems(listOf(monitoredItem))
+        return deleteMonitoredItemRequest?.thenCompose {
+            client.subscriptionManager.deleteSubscription(sub.subscriptionId)
         }
     }
 }
