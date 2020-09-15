@@ -1,32 +1,33 @@
 package elka.achlebos.view.fragment
 
+import elka.achlebos.model.data.DataDispatcher
+import elka.achlebos.viewmodel.ChartFragmentViewModel
 import javafx.embed.swing.SwingNode
-import javafx.scene.layout.VBox
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.plot.PlotOrientation
-import org.jfree.data.xy.XYSeries
 import org.jfree.data.xy.XYSeriesCollection
 import tornadofx.*
+import java.util.*
 
-class ChartFragment : Fragment() {
+class ChartFragment(dataQueueNum: Int) : Fragment() {
+    private val viewModel = ChartFragmentViewModel(dataQueueNum)
 
-    private var chartPanel: ChartPanel
-    private var chart: JFreeChart
+    private var chartPanel: ChartPanel by singleAssign()
+    private var chart: JFreeChart by singleAssign()
     private val dataset = XYSeriesCollection()
 
-    private lateinit var n: VBox
+    override val root = borderpane()
 
     init {
-        val series = XYSeries("Received values")
-        series.add(0, 0)
-        series.add(1, 1)
-        series.add(2, 2)
-        series.add(3, 8)
-        series.add(4, 5)
+        DataDispatcher.addObserver(viewModel)
+        initializeChart()
+        displayChart()
+    }
 
-        dataset.addSeries(series)
+    private fun initializeChart() {
+        dataset.addSeries(viewModel.series)
 
         chart = ChartFactory.createXYLineChart(
                 "Received values",
@@ -38,23 +39,12 @@ class ChartFragment : Fragment() {
                 true,
                 false
         )
-
         chartPanel = ChartPanel(chart)
     }
 
-    override val root = vbox {
-        n = this
-
-        button {
-            action {
-                addChart()
-            }
-        }
-    }
-
-    private fun addChart() {
+    private fun displayChart() {
         val swingNode = SwingNode()
         swingNode.content = chartPanel
-        n.replaceChildren(swingNode)
+        root.center = swingNode
     }
 }

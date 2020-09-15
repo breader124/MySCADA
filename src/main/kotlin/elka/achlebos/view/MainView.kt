@@ -1,15 +1,24 @@
 package elka.achlebos.view
 
+import elka.achlebos.model.SubscriptionCreatedEvent
 import elka.achlebos.view.fragment.AddressSpaceFragment
 import elka.achlebos.view.fragment.ChartFragment
 import elka.achlebos.viewmodel.MainViewModel
+import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
 import javafx.stage.StageStyle
 import tornadofx.*
 
 
 class MainView : View("MySCADA") {
     private val viewModel: MainViewModel by inject()
+    private var chartTabPane: TabPane = tabpane()
 
+    init {
+        subscribe<SubscriptionCreatedEvent> {
+            addNewChartToTabPane(it.queueNum)
+        }
+    }
 
     override val root = borderpane {
         top = menubar {
@@ -36,24 +45,31 @@ class MainView : View("MySCADA") {
 
         left<AddressSpaceFragment>()
 
-        center = tabpane {
-            tab<ChartFragment>()
-        }
+        center = chartTabPane
     }
 
     private fun openCertificateCreationWindow() {
-        openInternalWindow<CertificateCreationView>(
-                modal = true,
+        find<CertificateCreationView>().openModal(
+                stageStyle = StageStyle.UNDECORATED,
                 escapeClosesWindow = false,
-                closeButton = false
+                block = true
         )
     }
 
     private fun openCloseableCertificateCreationWindow() {
-        openInternalWindow<CertificateCreationView>(
-                modal = true,
-                escapeClosesWindow = true,
-                closeButton = true
+        find<CertificateCreationView>().openModal(
+                stageStyle = StageStyle.UNDECORATED,
+                escapeClosesWindow = true
         )
+    }
+
+    private fun addNewChartToTabPane(dataQueueNum: Int) {
+        val chartTabFragment = ChartFragment(dataQueueNum)
+        var chartTab = Tab()
+        tabpane {
+            chartTab = tab(chartTabFragment)
+        }
+        chartTabPane.tabs.add(chartTab)
+        chartTab.select()
     }
 }

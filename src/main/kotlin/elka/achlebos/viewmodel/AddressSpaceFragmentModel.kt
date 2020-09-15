@@ -1,8 +1,10 @@
 package elka.achlebos.viewmodel
 
+import elka.achlebos.model.SubscriptionCreatedEvent
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
+import elka.achlebos.model.data.DataDispatcher
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
 import elka.achlebos.view.popup.ErrorCreatingSubscription
@@ -66,8 +68,9 @@ class AddressSpaceFragmentModel : ViewModel() {
 
     fun subscribe(component: AddressSpaceComponent) {
         val onItemCreated = { monitoredItem: UaMonitoredItem, id: Int ->
+            val allocatedQueueNum = DataDispatcher.allocateNewQueue()
             monitoredItem.setValueConsumer { _, data: DataValue ->
-                println("${monitoredItem.hashCode()}: ${data.value.value}")
+                DataDispatcher.addDataToQueue(allocatedQueueNum, data.value.value)
             }
         }
         component.subscribe(1000.0, onItemCreated)
@@ -78,6 +81,7 @@ class AddressSpaceFragmentModel : ViewModel() {
                 .get()
 
         log.info("Successfully created monitored item for: ${component.name}")
+        fire(SubscriptionCreatedEvent(DataDispatcher.nextQueueNum - 1))
     }
 
     fun disconnect(server: Server) {
