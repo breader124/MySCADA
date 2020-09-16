@@ -27,6 +27,7 @@ class ConnectionCreationView : View("New connection") {
 
         listview(model.discoveredEndpoints) {
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+                // possible bug
                 model.selectedEndpoint.value = newValue
             }
 

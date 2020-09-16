@@ -6,17 +6,16 @@ import elka.achlebos.view.popup.CertificateCreationErrorDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
+import javafx.geometry.Pos
 import tornadofx.*
 import java.io.IOException
+import java.time.LocalDate
 
 class CertificateCreationView : View("Certificate Creator") {
     private val certificateCreationModel: CertificateCreationViewModel by inject()
     private val infoModel: CertificateInfoViewModel by inject()
 
-    private val domainNames = infoModel.dnsNames.asObservable()
     private val newDomain = SimpleStringProperty()
-
-    private val ipAddresses = infoModel.ipAddresses.asObservable()
     private val newIpAddress = SimpleStringProperty()
 
     private val ROW_HEIGHT = 30
@@ -26,82 +25,110 @@ class CertificateCreationView : View("Certificate Creator") {
     init {
         certificateCreationModel.item = X509CertificateManager()
         infoModel.item = X509CertificateInfo()
+        infoModel.pickedDate.value = LocalDate.now().plusMonths(1)
+        infoModel.setPeriod()
     }
 
     override val root = scrollpane(fitToWidth = true) {
         form {
             fieldset("Information") {
                 field("Common name") {
-                    textfield(infoModel.commonName)
+                    textfield(infoModel.commonName).required()
                 }
                 field("Organization") {
-                    textfield(infoModel.organization)
+                    textfield(infoModel.organization).required()
                 }
                 field("Organizational unit") {
-                    textfield(infoModel.organizationalUnit)
+                    textfield(infoModel.organizationalUnit).required()
                 }
                 field("Locality name") {
-                    textfield(infoModel.localityName)
+                    textfield(infoModel.localityName).required()
                 }
                 field("Country code") {
-                    textfield(infoModel.countryCode)
+                    textfield(infoModel.countryCode).required()
                 }
                 field("Application URI") {
-                    textfield(infoModel.applicationUri)
+                    textfield(infoModel.applicationUri).required()
                 }
                 field("Valid until") {
-                    datepicker(infoModel.pickedDate).setOnAction {
-                        infoModel.setPeriod()
+                    datepicker(infoModel.pickedDate) {
+                        value = LocalDate.now().plusMonths(1)
+
+                        setOnAction {
+                            if (value != null) {
+                                infoModel.setPeriod()
+                            } else {
+                                value = LocalDate.now().plusMonths(1)
+                            }
+                        }
                     }
                 }
                 vbox {
                     field("Domain names") {
-                        listview(domainNames) {
+                        listview(infoModel.dnsNames) {
                             prefHeight = PREFERRED_LISTVIEW_HEIGHT
                         }
                     }
                     hbox {
                         textfield(newDomain)
                         button("+").setOnAction {
-                            domainNames.add(newDomain.value)
+                            infoModel.dnsNames.value.add(newDomain.value)
+                            newDomain.value = ""
                         }
+                        alignment = Pos.CENTER_RIGHT
                     }
                 }
                 vbox {
                     field("IP addresses") {
-                        listview(ipAddresses) {
+                        listview(infoModel.ipAddresses) {
                             prefHeight = PREFERRED_LISTVIEW_HEIGHT
                         }
                     }
                     hbox {
                         textfield(newIpAddress)
                         button("+").setOnAction {
-                            ipAddresses.add(newIpAddress.value)
+                            infoModel.ipAddresses.value.add(newIpAddress.value)
+                            newIpAddress.value = ""
                         }
+                        alignment = Pos.CENTER_RIGHT
                     }
                 }
                 fieldset("Password") {
-                    passwordfield(infoModel.password)
+                    passwordfield(infoModel.password).required()
                 }
             }
             buttonbar {
-                button("Save").setOnAction {
-                    infoModel.commit()
+                button("Save") {
+                    enableWhen(infoModel.valid)
 
-                    val certInfo = infoModel.item
-                    certInfo.dnsNames = domainNames
-                    certInfo.ipAddresses = ipAddresses
-
-                    try {
-                        certificateCreationModel.createCertificate(certInfo, certInfo.commonName)
-                        infoModel.storeInformationInPreferences()
-                        close()
-                    } catch (exc: IOException) {
-                        find<CertificateCreationErrorDialog>().openWindow()
+                    action {
+                        infoModel.commit()
+                        val certInfo = infoModel.item
+                        try {
+                            certificateCreationModel.createCertificate(certInfo, certInfo.commonName)
+                            infoModel.storeInformationInPreferences()
+                            close()
+                        } catch (exc: IOException) {
+                            find<CertificateCreationErrorDialog>().openWindow()
+                        }
                     }
                 }
             }
         }
+    }
+
+    override fun onUndock() {
+        infoModel.commonName.value = ""
+        infoModel.password.value = "" 
+        infoModel.commonName.value = "" 
+        infoModel.organization.value = "" 
+        infoModel.organizationalUnit.value = "" 
+        infoModel.localityName.value = "" 
+        infoModel.countryCode.value = "" 
+        infoModel.applicationUri.value = ""
+        infoModel.pickedDate.value = LocalDate.now().plusMonths(1)
+        infoModel.dnsNames.value = observableListOf()
+        infoModel.ipAddresses.value = observableListOf()
     }
 }
 

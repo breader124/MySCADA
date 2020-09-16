@@ -98,6 +98,7 @@ class AddressSpaceFragmentModel : ViewModel() {
         runAsync {
             activeSubscriptions[uuid]?.unsubscribe(uuid)?.get()
             activeSubscriptions.remove(uuid)
+            DataDispatcher.removeQueue(uuid)
             log.info("Successfully unsubscribed for UUID: $uuid")
         }
     }

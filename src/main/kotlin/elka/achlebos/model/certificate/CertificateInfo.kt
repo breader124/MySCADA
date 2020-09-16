@@ -1,7 +1,9 @@
 package elka.achlebos.model.certificate
 
+import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.ObservableList
 import tornadofx.*
 import java.time.Period
 
@@ -16,8 +18,8 @@ class X509CertificateInfo(
         countryCode: String? = null,
         applicationUri: String? = null,
         validityPeriod: Period? = Period.ZERO,
-        dnsNames: List<String>? = observableListOf(),
-        ipAddresses: List<String>? = observableListOf()
+        dnsNames: ObservableList<String>? = observableListOf(),
+        ipAddresses: ObservableList<String>? = observableListOf()
 ) : CertificateInfo() {
     val passwordProperty = SimpleStringProperty(this, "password", password)
     var password: String by passwordProperty
@@ -43,9 +45,9 @@ class X509CertificateInfo(
     val validityPeriodProperty = SimpleObjectProperty<Period>(this, "validityPeriod", validityPeriod)
     var validityPeriod: Period by validityPeriodProperty
 
-    val dnsNamesProperty = SimpleObjectProperty<List<String>>(this, "dnsNames", dnsNames)
-    var dnsNames: List<String> by dnsNamesProperty
+    val dnsNamesProperty = SimpleListProperty<String>(this, "dnsNames", dnsNames)
+    var dnsNames: ObservableList<String> by dnsNamesProperty
 
-    val ipAddressesProperty = SimpleObjectProperty<List<String>>(this, "ipAddresses", ipAddresses)
-    var ipAddresses: List<String> by ipAddressesProperty
+    val ipAddressesProperty = SimpleListProperty<String>(this, "ipAddresses", ipAddresses)
+    var ipAddresses: ObservableList<String> by ipAddressesProperty
 }
