@@ -1,26 +1,37 @@
 package elka.achlebos.view
 
 import elka.achlebos.model.connection.Connection
-import elka.achlebos.view.popup.ConnectionRefusedDialog
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
+import javafx.beans.property.SimpleBooleanProperty
 import tornadofx.*
-import java.util.logging.Logger
 
 class ConnectionCreationView : View("New connection") {
     private val model: ConnectionCreationViewModel by inject()
 
+    private val discoverButtonActive = SimpleBooleanProperty(false)
+    private val connectButtonActive = SimpleBooleanProperty(false)
+
     override val root = form {
         fieldset {
-            textfield(model.serverUri)
-            button("Discover endpoints").action {
-                model.clearDiscoveredEndpoints()
-                runAsync {
-                    model.item = Connection(model.serverUri.value)
-                    model.discover()
-                } ui {
-                    model.discoveredEndpoints.addAll(it)
-                } fail {
-                    model.handleDiscoveryException(it)
+            textfield(model.serverUri) {
+                setOnKeyReleased {
+                    discoverButtonActive.value = model.serverUri.value.isNotEmpty()
+                }
+            }
+
+            button("Discover endpoints") {
+                enableWhen(discoverButtonActive)
+
+                action {
+                    model.clearDiscoveredEndpoints()
+                    runAsync {
+                        model.item = Connection(model.serverUri.value)
+                        model.discover()
+                    } ui {
+                        model.discoveredEndpoints.addAll(it)
+                    } fail {
+                        model.handleDiscoveryException(it)
+                    }
                 }
             }
         }
@@ -29,6 +40,8 @@ class ConnectionCreationView : View("New connection") {
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                 // possible bug
                 model.selectedEndpoint.value = newValue
+                log.info("${model.selectedEndpoint.value}")
+                connectButtonActive.value = isServerChosenAndPasswordProvided()
             }
 
             cellFormat {
@@ -52,17 +65,40 @@ class ConnectionCreationView : View("New connection") {
 
         fieldset {
             field("Password") {
-                passwordfield(model.password)
+                passwordfield(model.password) {
+                    setOnKeyTyped {
+                        connectButtonActive.value = isServerChosenAndPasswordProvided()
+                    }
+                }
             }
         }
 
-        button("Connect").action {
-            runAsync {
-                model.connect()
-            } fail {
-                model.handleConnectException(it)
+        button("Connect") {
+            enableWhen(connectButtonActive)
+
+            action {
+                runAsync {
+                    model.connect()
+                    resetState()
+                } fail {
+                    model.handleConnectException(it)
+                }
+                close()
             }
-            close()
         }
+    }
+
+    private fun isServerChosenAndPasswordProvided(): Boolean {
+        return model.selectedEndpoint.value != null && model.password.value.isNotEmpty()
+    }
+
+    private fun resetState() {
+        model.serverUri.value = ""
+        model.password.value = ""
+        model.selectedEndpoint.value = null
+        model.clearDiscoveredEndpoints()
+
+        discoverButtonActive.value = false
+        connectButtonActive.value = false
     }
 }

@@ -19,9 +19,9 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     var discoveredEndpoints: ObservableList<EndpointDescription> = observableListOf()
 
-    val serverUri = SimpleStringProperty()
+    val serverUri = SimpleStringProperty("")
     val selectedEndpoint = SimpleObjectProperty<EndpointDescription>()
-    val password = SimpleStringProperty()
+    val password = SimpleStringProperty("")
 
     private val keyStorePath: Path = Paths.get("keyStore.jks")
 
@@ -74,7 +74,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
     }
 
     fun handleConnectException(exc: Throwable) {
-        log.info("Handling connecting exception")
+        log.severe(exc.localizedMessage)
         find<ConnectionRefusedDialog>().openWindow()
     }
 }
