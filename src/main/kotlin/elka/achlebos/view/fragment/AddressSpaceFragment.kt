@@ -97,6 +97,10 @@ class AddressSpaceFragment : Fragment() {
                 fitToParentWidth()
             }
         }
+
+        style {
+            borderColor += box(c("#a1a1a1"))
+        }
     }
 
     private fun generateTreeFor(server: Server): TreeView<AddressSpaceComponent> {

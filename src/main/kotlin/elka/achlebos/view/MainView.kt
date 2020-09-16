@@ -42,6 +42,10 @@ class MainView : View("MySCADA") {
                     viewModel.switchCertificateAlreadyExistsToFalse()
                     openCertificateCreationWindow()
                 }
+
+                item("Export to binary form").action {
+                    viewModel.exportCertificateToBinaryFormat()
+                }
             }
         }
 

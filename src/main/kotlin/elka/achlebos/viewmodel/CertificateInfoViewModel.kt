@@ -1,9 +1,7 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.certificate.X509CertificateInfo
-import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ObservableList
 import tornadofx.*
 import java.time.LocalDate
 import java.time.Period
