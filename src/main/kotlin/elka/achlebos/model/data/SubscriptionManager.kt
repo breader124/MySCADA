@@ -2,7 +2,6 @@ package elka.achlebos.model.data
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger
 import java.util.*
 
 object SubscriptionManager {

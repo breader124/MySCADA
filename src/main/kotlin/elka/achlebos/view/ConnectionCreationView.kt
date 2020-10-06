@@ -38,7 +38,7 @@ class ConnectionCreationView : View("New connection") {
 
         listview(model.discoveredEndpoints) {
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
-                // possible bug
+                // TODO possible bug
                 model.selectedEndpoint.value = newValue
                 log.info("${model.selectedEndpoint.value}")
                 connectButtonActive.value = isServerChosenAndPasswordProvided()
@@ -82,6 +82,8 @@ class ConnectionCreationView : View("New connection") {
                     resetState()
                 } fail {
                     model.handleConnectException(it)
+                } finally {
+                    resetState()
                 }
                 close()
             }

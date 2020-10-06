@@ -1,17 +1,10 @@
-certyfikaty:
-	sprawdzanie, czy certyfikat nie wygasł <3
-	usuwanie i tworzenie nowych certyfikatów na żądanie <3
+TOP PRIORITY:	bezpieczne połączenie z mikrokontrolerem
+				zapis nowej wartości do zmiennej 
 
-zarządzanie połączeniami:
-	przechwycenie zdarzenia utworzenia nowego połączenia <3
-	umożliwienie przeglądania przestrzeni adresowej połączonych serwerów <3
-	umożliwienie rozłączenia się z serwerem	<3
-	umożliwienie pojedynczego reada na zmiennej <3
-	umożliwienie zapisu nowej wartości na zmiennej
-	umożliwienie zasubskrybowania zmiennej i wyświetlanie jej wartości na wykresie <3
 
-WALIDACJA
-LAYOUT
-STORE STATE OF APPLICATION
+testy w aplikacji desktopowej
+testy manualne, żeby wyłapać potencjalne błędy i od razu je rozwiązać 
+przechwycenie wyjątku przy zamknięciu połączenia a potem wykresu
 
-TESTY!!!!!!!!!!!!
+
+więcej mówiące komunikaty wyjątków

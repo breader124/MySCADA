@@ -34,7 +34,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
     fun discover(): List<EndpointDescription> {
         return item
                 .discoverEndpoints()
-                .whenComplete{ _, _ -> log.info("Successfully discovered endpoints") }
+                .whenComplete{ _, _ -> log.info("Completed discovering endpoints") }
                 .exceptionally {
                     log.severe("Encountered problem discovering endpoints")
                     throw it

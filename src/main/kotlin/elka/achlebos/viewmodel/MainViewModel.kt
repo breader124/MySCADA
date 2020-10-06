@@ -7,18 +7,19 @@ import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
 import elka.achlebos.view.popup.ConnectionCreatedDialog
 import elka.achlebos.view.popup.ProvidedPasswordIsIncorrectDialog
+import javafx.scene.control.Alert.AlertType.INFORMATION
 import tornadofx.*
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.security.PrivilegedActionException
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
 class MainViewModel : ViewModel() {
     init {
+        // TODO it is possible to replace every popup class with just oneliner below
+        alert(INFORMATION, "Message", "Message content")
+
         subscribe<ConnectionCreatedEvent> { event ->
             find<ConnectionCreatedDialog>().openWindow()
             ServerManager.addServer(Server(event.name, event.opcUaClient))
