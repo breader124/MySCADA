@@ -5,9 +5,8 @@ import elka.achlebos.model.ConnectionCreatedEvent
 import elka.achlebos.model.certificate.X509CertificateManager
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
-import elka.achlebos.view.popup.ConnectionCreatedDialog
-import elka.achlebos.view.popup.ProvidedPasswordIsIncorrectDialog
-import javafx.scene.control.Alert.AlertType.INFORMATION
+import elka.achlebos.view.dialog.PasswordProviderDialog
+import javafx.scene.control.Alert.AlertType
 import tornadofx.*
 import java.io.File
 import java.nio.file.Path
@@ -17,11 +16,8 @@ import java.time.format.DateTimeParseException
 
 class MainViewModel : ViewModel() {
     init {
-        // TODO it is possible to replace every popup class with just oneliner below
-        alert(INFORMATION, "Message", "Message content")
-
         subscribe<ConnectionCreatedEvent> { event ->
-            find<ConnectionCreatedDialog>().openWindow()
+            alert(AlertType.INFORMATION, "Connection created successfully")
             ServerManager.addServer(Server(event.name, event.opcUaClient))
         }
     }
@@ -48,20 +44,38 @@ class MainViewModel : ViewModel() {
         return needToCreateNewCert
     }
 
-    fun exportCertificateToBinaryFormat() {
+    fun exportCertAndPrivateKeyToBinaryFormat() {
         val keyStorePath: Path = Paths.get("keyStore.jks")
         preferences {
             val certName = get("certificateName", "")
             val certificateManager = X509CertificateManager()
             try {
-                // TODO change to use provided, not hardcoded password
-                val (cert, _) = certificateManager.load("password", keyStorePath, certName)
-                File("binaryFormCert").writeBytes(cert.encoded)
+                val modal = find<PasswordProviderDialog>().apply {
+                    openModal(block = true)
+                }
+                val (cert, keyPair) = certificateManager.load(modal.getPassword(), keyStorePath, certName)
+
+                var chosenFile = chooseFile(
+                        title = "Choose certificate file",
+                        filters = emptyArray()
+                ).firstOrNull()
+
+                chosenFile?.apply {
+                    File(path).writeBytes(cert.encoded)
+                }
+
+                chosenFile = chooseFile(
+                        title = "Choose private key file",
+                        filters = emptyArray()
+                ).firstOrNull()
+
+                chosenFile?.apply {
+                    File(path).writeBytes(keyPair.private.encoded)
+                }
             } catch (exc: CertificateLoadingException) {
-                find<ProvidedPasswordIsIncorrectDialog>().openWindow()
+                alert(AlertType.ERROR, "Provided password is incorrect")
             }
         }
-
     }
 
     private fun checkIfCertificateNotExpired(): Boolean {

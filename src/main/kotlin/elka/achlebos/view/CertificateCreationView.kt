@@ -2,11 +2,11 @@ package elka.achlebos.view
 
 import elka.achlebos.model.certificate.X509CertificateInfo
 import elka.achlebos.model.certificate.X509CertificateManager
-import elka.achlebos.view.popup.CertificateCreationErrorDialog
 import elka.achlebos.viewmodel.CertificateCreationViewModel
 import elka.achlebos.viewmodel.CertificateInfoViewModel
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
+import javafx.scene.control.Alert.AlertType
 import tornadofx.*
 import java.io.IOException
 import java.time.LocalDate
@@ -109,7 +109,7 @@ class CertificateCreationView : View("Certificate Creator") {
                             infoModel.storeInformationInPreferences()
                             close()
                         } catch (exc: IOException) {
-                            find<CertificateCreationErrorDialog>().openWindow()
+                            alert(AlertType.ERROR, "Certificate creation error")
                         }
                     }
                 }

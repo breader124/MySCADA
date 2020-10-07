@@ -44,7 +44,7 @@ class MainView : View("MySCADA") {
                 }
 
                 item("Export to binary form").action {
-                    viewModel.exportCertificateToBinaryFormat()
+                    viewModel.exportCertAndPrivateKeyToBinaryFormat()
                 }
             }
         }

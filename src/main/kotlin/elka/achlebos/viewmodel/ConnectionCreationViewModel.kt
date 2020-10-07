@@ -2,11 +2,10 @@ package elka.achlebos.viewmodel
 
 import elka.achlebos.model.ConnectionCreatedEvent
 import elka.achlebos.model.connection.Connection
-import elka.achlebos.view.popup.ConnectionCannotBeEstablished
-import elka.achlebos.view.popup.ConnectionRefusedDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import javafx.scene.control.Alert.AlertType
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.sdk.client.api.UaClient
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription
@@ -66,7 +65,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
         when (exc) {
             is ExecutionException -> {
-                find<ConnectionCannotBeEstablished>().openWindow()
+                alert(AlertType.ERROR, "Connection cannot be established")
                 log.severe(exc.localizedMessage)
             }
             else -> log.severe(exc.localizedMessage)
@@ -75,7 +74,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     fun handleConnectException(exc: Throwable) {
         log.severe(exc.localizedMessage)
-        find<ConnectionRefusedDialog>().openWindow()
+        alert(AlertType.ERROR, "Connection refused")
     }
 }
 

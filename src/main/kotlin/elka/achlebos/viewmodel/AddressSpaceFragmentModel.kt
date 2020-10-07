@@ -5,9 +5,8 @@ import elka.achlebos.model.SubscriptionRemoveRequestEvent
 import elka.achlebos.model.data.*
 import elka.achlebos.model.server.Server
 import elka.achlebos.model.server.ServerManager
-import elka.achlebos.view.popup.ErrorCreatingSubscription
-import elka.achlebos.view.popup.ErrorTryingToDisconnect
 import javafx.collections.ObservableList
+import javafx.scene.control.Alert.AlertType
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem
 import org.eclipse.milo.opcua.stack.core.NamespaceTable
@@ -39,6 +38,7 @@ class AddressSpaceFragmentModel : ViewModel() {
                     log.severe("Error browsing catalogue content: ${component.name}")
 
 //                    TODO("handle TimeoutException instead of suppressing it")
+
                     return@runAsync
                 }
             } else {
@@ -121,12 +121,12 @@ class AddressSpaceFragmentModel : ViewModel() {
 
     fun handleSubscribeException() {
         log.info("Handling subscribe exception")
-        find<ErrorCreatingSubscription>().openWindow()
+        alert(AlertType.ERROR, "Error creating subscription")
     }
 
     fun handleDisconnectingException() {
         log.info("Handling disconnecting exception")
-        find<ErrorTryingToDisconnect>().openWindow()
+        alert(AlertType.ERROR, "Error trying to disconnect")
     }
 
     fun updateServerManagerState(server: Server) {
