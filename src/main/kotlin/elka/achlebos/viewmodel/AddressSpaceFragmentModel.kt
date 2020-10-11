@@ -1,6 +1,5 @@
 package elka.achlebos.viewmodel
 
-import elka.achlebos.model.SubscriptionCreatedEvent
 import elka.achlebos.model.SubscriptionRemoveRequestEvent
 import elka.achlebos.model.data.*
 import elka.achlebos.model.server.Server

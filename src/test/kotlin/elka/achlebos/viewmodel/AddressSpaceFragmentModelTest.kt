@@ -27,7 +27,6 @@ internal class AddressSpaceFragmentModelTest {
     private val catComponent = mock(AddressSpaceCatalogue::class.java)
     private val nodeComponent = mock(AddressSpaceNode::class.java)
     private val currentClient = mock(OpcUaClient::class.java)
-    private val server = mock(Server::class.java)
 
     private val refDescriptions = createReferenceDescriptions()
 
