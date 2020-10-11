@@ -1,17 +1,12 @@
-package viewmodel
+package elka.achlebos.viewmodel
 
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
-import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
-import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem
-import org.eclipse.milo.opcua.stack.client.UaStackClient
-import org.eclipse.milo.opcua.stack.client.transport.UaTransport
 import org.eclipse.milo.opcua.stack.core.types.builtin.*
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
@@ -19,14 +14,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
-import org.mockito.Mockito
 import org.mockito.Mockito.*
 import tornadofx.*
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
-class AddressSpaceFragmentModelTest {
+internal class AddressSpaceFragmentModelTest {
 
     private val model = AddressSpaceFragmentModel()
 
@@ -95,7 +89,7 @@ class AddressSpaceFragmentModelTest {
         `when`(catComponent.browse()).thenReturn(compFuture)
 
         // when
-        val items = model.discoverCatalogueContent(nodeComponent, currentClient)
+        val items = model.discoverCatalogueContent(catComponent, currentClient)
 
         // then
         assertThat(items.isNullOrEmpty())
@@ -156,14 +150,3 @@ private fun createReferenceDescriptions(): Array<ReferenceDescription> {
     }
     return r.toTypedArray()
 }
-
-// for mocking ordinary types
-private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
-
-// for mocking lambda expression used in subscribe function above
-private fun <T> anyObject(): T {
-    Mockito.anyObject<T>()
-    return uninitialized()
-}
-
-private fun <T> uninitialized(): T = null as T
