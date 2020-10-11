@@ -140,9 +140,13 @@ class AddressSpaceFragment : Fragment() {
                     }
                 }
 
-                item("Write...") {
+                item("Write... (only numerical value)") {
                     action {
-                        find<WriteDialog>().openWindow()
+                        selectedComponent.value?.also {
+                            val node = it as AddressSpaceNode
+                            val mappings = mapOf(WriteDialog::node to node)
+                            find<WriteDialog>(mappings).openWindow()
+                        }
                     }
                 }
 

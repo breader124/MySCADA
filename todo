@@ -1,10 +1,12 @@
-TOP PRIORITY:	bezpieczne połączenie z mikrokontrolerem
-				zapis nowej wartości do zmiennej 
+sobota:
+	zapis nowej wartości do zmiennej <3
+	testy w aplikacji desktopowej
+	bugfixing: zamknięcie połączenia -> zamknięcie wykresu
 
+niedziela:
+	testy manualne, bugfixing
+	więcej mówiące komunikaty wyjątków
+	komunikaty oczekiwania na połączenie and so on and so forth
 
-testy w aplikacji desktopowej
-testy manualne, żeby wyłapać potencjalne błędy i od razu je rozwiązać 
-przechwycenie wyjątku przy zamknięciu połączenia a potem wykresu
-
-
-więcej mówiące komunikaty wyjątków
+przyszły tydzień:
+	bezpieczne połączenie z mikrokontrolerem (kiedy dostanę mikrokontroler, który potrafi to zrobić)

@@ -131,7 +131,6 @@ class AddressSpaceFragmentModel : ViewModel() {
 
     fun updateServerManagerState(server: Server) {
         ServerManager.removeServer(server)
-
         log.info("Removed $server from ServerManager")
     }
 }
