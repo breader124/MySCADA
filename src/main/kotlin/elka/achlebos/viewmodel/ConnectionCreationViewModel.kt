@@ -1,5 +1,6 @@
 package elka.achlebos.viewmodel
 
+import elka.achlebos.model.CertificateLoadingException
 import elka.achlebos.model.ConnectionCreatedEvent
 import elka.achlebos.model.connection.Connection
 import javafx.beans.property.SimpleObjectProperty
@@ -74,7 +75,10 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     fun handleConnectException(exc: Throwable) {
         log.severe(exc.localizedMessage)
-        alert(AlertType.ERROR, "Connection refused")
+        when (exc) {
+            is CertificateLoadingException -> alert(AlertType.ERROR, "Incorrect password")
+            else -> alert(AlertType.ERROR, "Connection refused")
+        }
     }
 }
 

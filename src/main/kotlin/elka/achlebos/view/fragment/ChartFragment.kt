@@ -6,9 +6,13 @@ import javafx.embed.swing.SwingNode
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
 import org.jfree.chart.JFreeChart
+import org.jfree.chart.axis.DateAxis
 import org.jfree.chart.plot.PlotOrientation
+import org.jfree.data.time.TimeSeriesCollection
+import org.jfree.data.xy.XYDataset
 import org.jfree.data.xy.XYSeriesCollection
 import tornadofx.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ChartFragment(dataQueueNum: UUID) : Fragment() {
@@ -16,7 +20,7 @@ class ChartFragment(dataQueueNum: UUID) : Fragment() {
 
     private var chartPanel: ChartPanel by singleAssign()
     private var chart: JFreeChart by singleAssign()
-    private val dataset = XYSeriesCollection()
+    private val dataset = TimeSeriesCollection()
 
     override val root = borderpane()
 
@@ -29,16 +33,18 @@ class ChartFragment(dataQueueNum: UUID) : Fragment() {
     private fun initializeChart() {
         dataset.addSeries(viewModel.series)
 
-        chart = ChartFactory.createXYLineChart(
-                "Received values",
+        chart = ChartFactory.createTimeSeriesChart(
+                "",
                 "Timestamp",
                 "Value",
                 dataset,
-                PlotOrientation.VERTICAL,
                 true,
                 true,
                 false
         )
+        val xAxis = chart.xyPlot.domainAxis as DateAxis
+        val format = "HH:mm:ss"
+        xAxis.dateFormatOverride = SimpleDateFormat(format)
         chartPanel = ChartPanel(chart)
     }
 

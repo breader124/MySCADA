@@ -1,13 +1,12 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.data.DataDispatcher
-import org.jfree.data.xy.XYSeries
+import org.jfree.data.time.*
 import tornadofx.*
 import java.util.*
 
 class ChartFragmentViewModel(private val dataQueueNum: UUID) : ViewModel(), Observer {
-    val series = XYSeries("Received values")
-    var lastIndex: Int = 0
+    val series = TimeSeries("Received at")
 
     init {
         updateChartSeries()
@@ -23,7 +22,7 @@ class ChartFragmentViewModel(private val dataQueueNum: UUID) : ViewModel(), Obse
     private fun updateChartSeries() {
         val data = DataDispatcher.fetchDataFromQueue(dataQueueNum) as List<Number>
         for (number in data) {
-            series.add(lastIndex++, number)
+            series.add(Second(), number)
         }
     }
 }

@@ -15,6 +15,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
 import tornadofx.*
 import java.util.*
+import kotlin.random.Random
 
 open class AddressSpaceFragmentModel : ViewModel() {
 
@@ -27,7 +28,7 @@ open class AddressSpaceFragmentModel : ViewModel() {
             } success {
                 log.info("Successfully unsubscribed for UUID: $it")
             } fail {
-                alert(AlertType.ERROR, "Error occurred trying to unsubscribe")
+                alert(AlertType.ERROR, "Error occurred trying to unsubscribe", it.message)
             }
         }
     }
@@ -80,6 +81,7 @@ open class AddressSpaceFragmentModel : ViewModel() {
                 DataDispatcher.addDataToQueue(subscriptionUUID, data.value.value)
             }
         }
+
         val createdMonitoredItems = component.subscribe(subscriptionUUID, onItemCreated)
                 .exceptionally {
                     log.severe("Encountered problem creating subscription for ${component.name}")

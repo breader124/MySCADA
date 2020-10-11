@@ -5,6 +5,7 @@ import tornadofx.*
 
 class PasswordProviderDialog : Fragment("Enter password") {
     private val passwordProperty = SimpleStringProperty("")
+    var shouldContinue: Boolean = false
 
     override val root = form {
         fieldset {
@@ -15,6 +16,7 @@ class PasswordProviderDialog : Fragment("Enter password") {
             buttonbar {
                 button("Proceed") {
                     action {
+                        shouldContinue = true
                         close()
                     }
                 }

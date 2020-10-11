@@ -53,24 +53,27 @@ class MainViewModel : ViewModel() {
                 val modal = find<PasswordProviderDialog>().apply {
                     openModal(block = true)
                 }
-                val (cert, keyPair) = certificateManager.load(modal.getPassword(), keyStorePath, certName)
 
-                var chosenFile = chooseFile(
-                        title = "Choose certificate file",
-                        filters = emptyArray()
-                ).firstOrNull()
+                if (modal.shouldContinue) {
+                    val (cert, keyPair) = certificateManager.load(modal.getPassword(), keyStorePath, certName)
 
-                chosenFile?.apply {
-                    File(path).writeBytes(cert.encoded)
-                }
+                    var chosenFile = chooseFile(
+                            title = "Choose certificate file",
+                            filters = emptyArray()
+                    ).firstOrNull()
 
-                chosenFile = chooseFile(
-                        title = "Choose private key file",
-                        filters = emptyArray()
-                ).firstOrNull()
+                    chosenFile?.apply {
+                        File(path).writeBytes(cert.encoded)
+                    }
 
-                chosenFile?.apply {
-                    File(path).writeBytes(keyPair.private.encoded)
+                    chosenFile = chooseFile(
+                            title = "Choose private key file",
+                            filters = emptyArray()
+                    ).firstOrNull()
+
+                    chosenFile?.apply {
+                        File(path).writeBytes(keyPair.private.encoded)
+                    }
                 }
             } catch (exc: CertificateLoadingException) {
                 alert(AlertType.ERROR, "Provided password is incorrect")
