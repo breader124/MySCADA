@@ -19,11 +19,17 @@ import java.util.*
 
 open class AddressSpaceFragmentModel : ViewModel() {
 
-    private val activeSubscriptions: MutableMap<UUID, AddressSpaceComponent> = mutableMapOf()
+    val activeSubscriptions: MutableMap<UUID, AddressSpaceComponent> = mutableMapOf()
 
     init {
         subscribe<SubscriptionRemoveRequestEvent> {
-            unsubscribe(it.queueNum)
+            runAsync {
+                unsubscribe(it.queueNum)
+            } success {
+                log.info("Successfully unsubscribed for UUID: $it")
+            } fail {
+                alert(AlertType.ERROR, "Error occurred trying to unsubscribe")
+            }
         }
     }
 
@@ -67,7 +73,7 @@ open class AddressSpaceFragmentModel : ViewModel() {
         }
     }
 
-    fun subscribe(component: AddressSpaceComponent) {
+    fun subscribe(component: AddressSpaceComponent): UUID {
         val subscriptionUUID = UUID.randomUUID()
         val onItemCreated = { monitoredItem: UaMonitoredItem, id: Int ->
             DataDispatcher.allocateNewQueue(subscriptionUUID)
@@ -86,28 +92,23 @@ open class AddressSpaceFragmentModel : ViewModel() {
 
         log.info("Successfully created monitored item for: ${component.name}")
 
-        fire(SubscriptionCreatedEvent(subscriptionUUID, component.name))
+        return subscriptionUUID
     }
 
-    private fun unsubscribe(uuid: UUID) {
-        runAsync {
-            activeSubscriptions[uuid]?.unsubscribe(uuid)?.get()
-            activeSubscriptions.remove(uuid)
-            DataDispatcher.removeQueue(uuid)
-            log.info("Successfully unsubscribed for UUID: $uuid")
-        }
+    fun unsubscribe(uuid: UUID) {
+        activeSubscriptions[uuid]?.unsubscribe(uuid)?.get()
+        activeSubscriptions.remove(uuid)
+        DataDispatcher.removeQueue(uuid)
     }
 
     fun disconnect(server: Server) {
-        runAsync {
-            server.disconnect()
-                    .whenComplete { _, _ -> log.info("Successfully disconnected from $server") }
-                    .exceptionally {
-                        log.severe(it.localizedMessage)
-                        throw it
-                    }
-                    .get()
-        }
+        server.disconnect()
+                .whenComplete { _, _ -> log.info("Successfully disconnected from $server") }
+                .exceptionally {
+                    log.severe(it.localizedMessage)
+                    throw it
+                }
+                .get()
     }
 
     fun handleDiscoveringCatalogueContentException() {

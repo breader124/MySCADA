@@ -15,7 +15,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 abstract class AddressSpaceComponent(open val nodeId: NodeId,
-                                     val name: String,
+                                     open val name: String,
                                      protected val client: OpcUaClient) {
 
     abstract val items: ObservableList<AddressSpaceComponent>?
@@ -117,7 +117,9 @@ abstract class AddressSpaceComponent(open val nodeId: NodeId,
     }
 }
 
-open class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : AddressSpaceComponent(nodeId, name, client) {
+open class AddressSpaceNode(nodeId: NodeId,
+                            override val name: String,
+                            client: OpcUaClient) : AddressSpaceComponent(nodeId, name, client) {
 
     override var items: ObservableList<AddressSpaceComponent>? = null
 
@@ -214,8 +216,8 @@ open class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) :
 }
 
 open class AddressSpaceCatalogue(node: NodeId,
-                            name: String,
-                            client: OpcUaClient) : AddressSpaceComponent(node, name, client) {
+                                 name: String,
+                                 client: OpcUaClient) : AddressSpaceComponent(node, name, client) {
 
     override val items: ObservableList<AddressSpaceComponent> = observableListOf()
 

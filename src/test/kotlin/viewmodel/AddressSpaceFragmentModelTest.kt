@@ -6,7 +6,12 @@ import elka.achlebos.model.data.AddressSpaceNode
 import elka.achlebos.model.server.Server
 import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient
+import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem
+import org.eclipse.milo.opcua.stack.client.UaStackClient
+import org.eclipse.milo.opcua.stack.client.transport.UaTransport
 import org.eclipse.milo.opcua.stack.core.types.builtin.*
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult
@@ -15,27 +20,40 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 import tornadofx.*
 import java.lang.Exception
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class AddressSpaceFragmentModelTest {
 
     private val model = AddressSpaceFragmentModel()
 
-    private val catComponent = Mockito.mock(AddressSpaceCatalogue::class.java)
-    private val nodeComponent = Mockito.mock(AddressSpaceNode::class.java)
-    private val currentClient = Mockito.mock(OpcUaClient::class.java)
-    private val server = Mockito.mock(Server::class.java)
+    private val catComponent = mock(AddressSpaceCatalogue::class.java)
+    private val nodeComponent = mock(AddressSpaceNode::class.java)
+    private val currentClient = mock(OpcUaClient::class.java)
+    private val server = mock(Server::class.java)
 
     private val refDescriptions = createReferenceDescriptions()
 
     @BeforeEach
     fun init() {
+        prepareDiscoveryCatalogue()
+        prepareSubscription()
+    }
+
+    private fun prepareDiscoveryCatalogue() {
         val itemsList = observableListOf<AddressSpaceComponent>()
         `when`(catComponent.items).thenReturn(itemsList)
         `when`(catComponent.add(any(AddressSpaceComponent::class.java))).thenCallRealMethod()
+    }
+
+    private fun prepareSubscription() {
+        val compFuture: CompletableFuture<List<UaMonitoredItem>> =
+                CompletableFuture.supplyAsync { emptyList<UaMonitoredItem>() }
+        `when`(nodeComponent.subscribe(any(UUID::class.java), anyObject())).thenReturn(compFuture)
+        `when`(nodeComponent.name).thenReturn("example node name")
     }
 
     @Test
@@ -73,7 +91,7 @@ class AddressSpaceFragmentModelTest {
     @Test
     fun shouldReturnEmptyItemsListWhenExceptionOccurredWhileDiscoveryProcess() {
         // given
-        val compFuture: CompletableFuture<BrowseResult> = CompletableFuture.supplyAsync{ throw Exception() }
+        val compFuture: CompletableFuture<BrowseResult> = CompletableFuture.supplyAsync { throw Exception() }
         `when`(catComponent.browse()).thenReturn(compFuture)
 
         // when
@@ -81,6 +99,43 @@ class AddressSpaceFragmentModelTest {
 
         // then
         assertThat(items.isNullOrEmpty())
+    }
+
+    @Test
+    fun shouldAddNewActiveSubscriptionWhenSubscribeFunctionInvoked() {
+        // when
+        val uuid = model.subscribe(nodeComponent)
+
+        // then
+        assertThat(model.activeSubscriptions.size).isEqualTo(1)
+        assertThat(model.activeSubscriptions[uuid]).isEqualTo(nodeComponent)
+    }
+
+    @Test
+    fun shouldUnsubscribeWhenUnsubscribeInvokedWithCorrectUUID() {
+        // given
+        val uuid = model.subscribe(nodeComponent)
+
+        // when
+        model.unsubscribe(uuid)
+
+        // then
+        verify(nodeComponent, times(1)).unsubscribe(uuid)
+        assertThat(model.activeSubscriptions[uuid]).isNull()
+    }
+
+    @Test
+    fun shouldDoNothingWhenUnsubscribeInvokedWithNotExistingUUID() {
+        // given
+        val randomUUID = UUID.randomUUID()
+        val activeSubSize = model.activeSubscriptions.size
+
+        // when
+        model.unsubscribe(randomUUID)
+
+        // then
+        verifyNoInteractions(nodeComponent)
+        assertThat(model.activeSubscriptions.size).isEqualTo(activeSubSize)
     }
 }
 
@@ -102,4 +157,13 @@ private fun createReferenceDescriptions(): Array<ReferenceDescription> {
     return r.toTypedArray()
 }
 
+// for mocking ordinary types
 private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+
+// for mocking lambda expression used in subscribe function above
+private fun <T> anyObject(): T {
+    Mockito.anyObject<T>()
+    return uninitialized()
+}
+
+private fun <T> uninitialized(): T = null as T

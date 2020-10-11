@@ -1,5 +1,6 @@
 package elka.achlebos.view.fragment
 
+import elka.achlebos.model.SubscriptionCreatedEvent
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
 import elka.achlebos.model.data.AddressSpaceNode
@@ -86,7 +87,7 @@ class AddressSpaceFragment : Fragment() {
 
                 action {
                     runAsync {
-                        performDisconnection()
+                        model.disconnect(currentlyDisplayedServer)
                     } success {
                         deleteDisconnectedItemsFromFragment()
                     } fail {
@@ -157,9 +158,12 @@ class AddressSpaceFragment : Fragment() {
                     disableWhen(subscribeOptionInactive)
 
                     action {
+                        val componentName = selectedComponent.value?.name ?: ""
                         selectedComponent.value?.also {
                             runAsync {
                                 model.subscribe(it)
+                            } success {
+                                fire(SubscriptionCreatedEvent(it, componentName))
                             } fail {
                                 model.handleSubscribeException()
                             }
@@ -192,9 +196,5 @@ class AddressSpaceFragment : Fragment() {
         }
         selectedServer.value = null
         model.updateServerManagerState(currentlyDisplayedServer)
-    }
-
-    private fun performDisconnection() {
-        model.disconnect(currentlyDisplayedServer)
     }
 }
