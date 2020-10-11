@@ -109,7 +109,10 @@ class AddressSpaceFragment : Fragment() {
             populate {
                 if (connectedServers.contains(currentlyDisplayedServer)) {
                     try {
-                        model.discoverCatalogueContent(it.value, currentlyDisplayedServer.opcUaClient)
+                        runAsync {
+                            model.discoverCatalogueContent(it.value, currentlyDisplayedServer.opcUaClient)
+                        }
+                        it.value.items
                     } catch (exc: Exception) {
                         model.handleDiscoveringCatalogueContentException()
                         null

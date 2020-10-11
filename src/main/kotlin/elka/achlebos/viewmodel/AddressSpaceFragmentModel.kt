@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription
 import tornadofx.*
 import java.util.*
 
-class AddressSpaceFragmentModel : ViewModel() {
+open class AddressSpaceFragmentModel : ViewModel() {
 
     private val activeSubscriptions: MutableMap<UUID, AddressSpaceComponent> = mutableMapOf()
 
@@ -29,25 +29,20 @@ class AddressSpaceFragmentModel : ViewModel() {
 
     fun discoverCatalogueContent(component: AddressSpaceComponent,
                                  currentClient: OpcUaClient): ObservableList<AddressSpaceComponent>? {
-        runAsync {
-            val browseResult: BrowseResult
-            if (component is AddressSpaceCatalogue) {
-                try {
-                    browseResult = component.browse().get()
-                } catch (exc: Exception) {
-                    log.severe("Error browsing catalogue content: ${component.name}")
-
-//                    TODO("handle TimeoutException instead of suppressing it")
-
-                    return@runAsync
-                }
-            } else {
-                return@runAsync
+        val browseResult: BrowseResult
+        if (component is AddressSpaceCatalogue) {
+            try {
+                browseResult = component.browse().get()
+            } catch (exc: Exception) {
+                log.severe(exc.localizedMessage)
+                return component.items
             }
-
-            val references: List<ReferenceDescription>? = browseResult.references?.asList()
-            references?.forEach { extendTreeByNewlyDiscoveredComponent(it, component, currentClient) }
+        } else {
+            return component.items
         }
+
+        val references: List<ReferenceDescription>? = browseResult.references?.asList()
+        references?.forEach { extendTreeByNewlyDiscoveredComponent(it, component, currentClient) }
 
         return component.items
     }

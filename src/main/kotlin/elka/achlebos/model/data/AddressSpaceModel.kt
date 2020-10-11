@@ -117,7 +117,7 @@ abstract class AddressSpaceComponent(open val nodeId: NodeId,
     }
 }
 
-class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : AddressSpaceComponent(nodeId, name, client) {
+open class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : AddressSpaceComponent(nodeId, name, client) {
 
     override var items: ObservableList<AddressSpaceComponent>? = null
 
@@ -213,7 +213,7 @@ class AddressSpaceNode(nodeId: NodeId, name: String, client: OpcUaClient) : Addr
     }
 }
 
-class AddressSpaceCatalogue(node: NodeId,
+open class AddressSpaceCatalogue(node: NodeId,
                             name: String,
                             client: OpcUaClient) : AddressSpaceComponent(node, name, client) {
 
