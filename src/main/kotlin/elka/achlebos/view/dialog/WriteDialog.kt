@@ -33,10 +33,7 @@ class WriteDialog : View() {
                     result = if (it.isGood) "Success" else ""
                     result = if (it.isBad) "Failure" else result
                     result = if (it.isUncertain) "Uncertain" else result
-                    val message = """
-                        Result: $result
-                        Current value is: ${it.value}
-                    """.trimIndent()
+                    val message = "Result: $result"
                     alert(AlertType.INFORMATION, "Write node...", message)
                 } fail {
                     alert(AlertType.ERROR, "Network error occurred writing to node")

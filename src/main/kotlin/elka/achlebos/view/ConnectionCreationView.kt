@@ -3,6 +3,8 @@ package elka.achlebos.view
 import elka.achlebos.model.connection.Connection
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.control.ListView
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription
 import tornadofx.*
 
 class ConnectionCreationView : View("New connection") {
@@ -10,6 +12,8 @@ class ConnectionCreationView : View("New connection") {
 
     private val discoverButtonActive = SimpleBooleanProperty(false)
     private val connectButtonActive = SimpleBooleanProperty(false)
+
+    private var list: ListView<EndpointDescription> by singleAssign()
 
     override val root = form {
         fieldset {
@@ -36,16 +40,18 @@ class ConnectionCreationView : View("New connection") {
             }
         }
 
-        listview(model.discoveredEndpoints) {
-            selectionModel.selectedItemProperty().addListener { _, _, newValue ->
-                // TODO possible bug
+        list = listview(model.discoveredEndpoints) {
+            selectionModel.selectedItemProperty().addListener { _, oldValue, newValue ->
+                log.info("""
+                    Old value: ${oldValue?.securityMode?.toString() ?: "no old value"}
+                    new value: ${newValue?.securityMode?.toString() ?: "no new value"}
+                """.trimIndent())
                 model.selectedEndpoint.value = newValue
-                log.info("${model.selectedEndpoint.value}")
                 connectButtonActive.value = isServerChosenAndPasswordProvided()
             }
 
             cellFormat {
-                graphic = cache {
+                graphic = hbox {
                     form {
                         fieldset {
                             field("Server URI") {

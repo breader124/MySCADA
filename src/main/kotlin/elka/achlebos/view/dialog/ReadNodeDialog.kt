@@ -43,4 +43,9 @@ class ReadNodeDialog : View() {
             }
         }
     }
+
+    override fun onUndock() {
+        readResultProperty.value = ""
+        super.onUndock()
+    }
 }

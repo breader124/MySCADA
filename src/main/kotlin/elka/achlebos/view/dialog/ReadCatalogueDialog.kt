@@ -37,4 +37,9 @@ class ReadCatalogueDialog : View() {
             }
         }
     }
+
+    override fun onUndock() {
+        readResultProperty.value = ""
+        super.onUndock()
+    }
 }

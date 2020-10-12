@@ -13,7 +13,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription
 import tornadofx.*
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.concurrent.ExecutionException
 
 class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
@@ -34,7 +33,7 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
     fun discover(): List<EndpointDescription> {
         return item
                 .discoverEndpoints()
-                .whenComplete{ _, _ -> log.info("Completed discovering endpoints") }
+                .whenComplete { _, _ -> log.info("Completed discovering endpoints") }
                 .exceptionally {
                     log.severe("Encountered problem discovering endpoints")
                     throw it
@@ -63,22 +62,29 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
 
     fun handleDiscoveryException(exc: Throwable) {
         log.info("Handling discovery exception")
-
-        when (exc) {
-            is ExecutionException -> {
-                alert(AlertType.ERROR, "Connection cannot be established")
-                log.severe(exc.localizedMessage)
+        exc.message?.also {
+            when {
+                it.contains("Connection refused") -> {
+                    alert(AlertType.ERROR, "Connection refused")
+                }
+                it.contains("timed out") -> {
+                    alert(AlertType.ERROR, "Connection timed out waiting for response from host")
+                }
+                it.contains("unsupported protocol") -> {
+                    alert(AlertType.ERROR, "Protocol you wanted to use for establishing connection is unsupported")
+                }
             }
-            else -> log.severe(exc.localizedMessage)
         }
+        log.severe(exc.localizedMessage)
     }
 
     fun handleConnectException(exc: Throwable) {
-        log.severe(exc.localizedMessage)
+        log.info("Handling connect exception")
         when (exc) {
             is CertificateLoadingException -> alert(AlertType.ERROR, "Incorrect password")
             else -> alert(AlertType.ERROR, "Connection refused")
         }
+        log.severe(exc.localizedMessage)
     }
 }
 
