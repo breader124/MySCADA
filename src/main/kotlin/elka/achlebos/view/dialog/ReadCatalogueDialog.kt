@@ -32,6 +32,8 @@ class ReadCatalogueDialog : View() {
                         model.performCatalogueRead(component, selectedOption.value)
                     } ui {
                         readResultProperty.value = it.value?.toString() ?: "No value"
+                    } fail {
+                        model.handleReadException(it)
                     }
                 }
             }

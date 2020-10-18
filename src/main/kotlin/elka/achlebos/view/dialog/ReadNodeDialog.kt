@@ -38,6 +38,8 @@ class ReadNodeDialog : View() {
                             is Array<*> -> (it.value as Array<*>).contentDeepToString()
                             else -> it.value?.toString() ?: "No value"
                         }
+                    } fail {
+                        model.handleReadException(it)
                     }
                 }
             }

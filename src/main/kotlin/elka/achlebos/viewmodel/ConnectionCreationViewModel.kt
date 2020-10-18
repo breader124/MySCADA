@@ -73,6 +73,9 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
                 it.contains("unsupported protocol") -> {
                     alert(AlertType.ERROR, "Protocol you wanted to use for establishing connection is unsupported")
                 }
+                it.contains("closed") -> {
+                    alert(AlertType.ERROR, "Network error occurred, connection is closed. Please try again")
+                }
             }
         }
         log.severe(exc.localizedMessage)

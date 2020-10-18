@@ -1,8 +1,11 @@
 package elka.achlebos.viewmodel
 
 import elka.achlebos.model.data.AddressSpaceComponent
+import javafx.scene.control.Alert
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant
 import tornadofx.*
+
+// TODO handle read timeout
 
 class ReadDialogModel : ViewModel() {
     private fun readNodeId(component: AddressSpaceComponent): Variant = component.readNodeId().get().value
@@ -68,5 +71,11 @@ class ReadDialogModel : ViewModel() {
             CatalogueReadOption.USER_WRITE_MASK -> readUserWriteMask(component)
             CatalogueReadOption.EVENT_NOTIFIER -> readEventNotifier(component)
         }
+    }
+
+    fun handleReadException(exc: Throwable) {
+        log.info("Handling discovery exception")
+        alert(Alert.AlertType.ERROR, "Timed out. Please try again")
+        log.severe(exc.localizedMessage)
     }
 }
