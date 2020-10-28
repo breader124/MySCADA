@@ -1,5 +1,7 @@
 package elka.achlebos.view.fragment
 
+import elka.achlebos.model.EstablishingConnectionStarted
+import elka.achlebos.model.EstablishingConnectionStopped
 import elka.achlebos.model.SubscriptionCreatedEvent
 import elka.achlebos.model.data.AddressSpaceCatalogue
 import elka.achlebos.model.data.AddressSpaceComponent
@@ -24,8 +26,11 @@ class AddressSpaceFragment : Fragment() {
 
     private val model: AddressSpaceFragmentModel by inject()
     private var serverTreeBorderPane: BorderPane by singleAssign()
+
     private var noConnectedServerLabel: Label by singleAssign()
     private val noChosenServerLabel = label("There is no chosen server")
+    private val connectingInProgressLabel = label("Connecting to chosen server in progress...")
+    private var previousLabel: Label? = null
 
     private val connectedServers: ObservableList<Server> = ServerManager.CONNECTED
     private val selectedServer = SimpleObjectProperty<Server?>()
@@ -35,7 +40,7 @@ class AddressSpaceFragment : Fragment() {
     private lateinit var currentlyDisplayedServer: Server
 
     private val disconnectButtonInactive: SimpleBooleanProperty = SimpleBooleanProperty(true)
-    private val subscribeOptionInactive: SimpleBooleanProperty = SimpleBooleanProperty()
+    private val nodeOptionsInactive: SimpleBooleanProperty = SimpleBooleanProperty()
 
     init {
         selectedServer.onChange {
@@ -56,6 +61,17 @@ class AddressSpaceFragment : Fragment() {
                 } else {
                     serverTreeBorderPane.center = noConnectedServerLabel
                 }
+            }
+        }
+
+        subscribe<EstablishingConnectionStarted> {
+            previousLabel = serverTreeBorderPane.center as Label?
+            serverTreeBorderPane.center = connectingInProgressLabel
+        }
+
+        subscribe<EstablishingConnectionStopped> {
+            if (serverTreeBorderPane.center == connectingInProgressLabel) {
+                serverTreeBorderPane.center = previousLabel
             }
         }
     }
@@ -145,17 +161,20 @@ class AddressSpaceFragment : Fragment() {
                 }
 
                 item("Write... (only numerical value)") {
+                    disableWhen(nodeOptionsInactive)
+
                     action {
                         selectedComponent.value?.also {
-                            val node = it as AddressSpaceNode
-                            val mappings = mapOf(WriteDialog::node to node)
-                            find<WriteDialog>(mappings).openWindow()
+                            if (it is AddressSpaceNode) {
+                                val mappings = mapOf(WriteDialog::node to it)
+                                find<WriteDialog>(mappings).openWindow()
+                            }
                         }
                     }
                 }
 
                 item("Subscribe...") {
-                    disableWhen(subscribeOptionInactive)
+                    disableWhen(nodeOptionsInactive)
 
                     action {
                         val componentName = selectedComponent.value?.name ?: ""
@@ -174,7 +193,7 @@ class AddressSpaceFragment : Fragment() {
 
             onUserSelect {
                 selectedComponent.value = it
-                subscribeOptionInactive.value = it !is AddressSpaceNode
+                nodeOptionsInactive.value = it !is AddressSpaceNode
             }
 
             fitToParentHeight()

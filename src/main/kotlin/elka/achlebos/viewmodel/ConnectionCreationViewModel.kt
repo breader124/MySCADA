@@ -2,6 +2,8 @@ package elka.achlebos.viewmodel
 
 import elka.achlebos.model.CertificateLoadingException
 import elka.achlebos.model.ConnectionCreatedEvent
+import elka.achlebos.model.EstablishingConnectionStarted
+import elka.achlebos.model.EstablishingConnectionStopped
 import elka.achlebos.model.connection.Connection
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -42,20 +44,20 @@ class ConnectionCreationViewModel : ItemViewModel<Connection>() {
     }
 
     fun connect() {
+        fire(EstablishingConnectionStarted())
         item.connectUsingX509Cert(
                 selectedEndpoint.value,
                 keyStorePath,
                 password.value
         ).whenComplete { client: UaClient?, _: Throwable? ->
-            val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
+            val entireSecurityPolicyUri = selectedEndpoint.value.securityPolicyUri
+            val securityPolicy = entireSecurityPolicyUri.split("#")[1]
+            val name = "[${selectedEndpoint.value.securityMode}] [${securityPolicy}] ${selectedEndpoint.value.endpointUrl}"
             fire(ConnectionCreatedEvent(name, client as OpcUaClient))
-
             log.info("Successfully connected with: $name")
         }.exceptionally {
             val name = "[${selectedEndpoint.value.securityMode}] ${selectedEndpoint.value.endpointUrl}"
-
             log.severe("Encountered problem connecting with $name")
-
             throw it
         }.get()
     }

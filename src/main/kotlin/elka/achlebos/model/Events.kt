@@ -9,3 +9,7 @@ class ConnectionCreatedEvent(val name: String, val opcUaClient: OpcUaClient): FX
 class SubscriptionCreatedEvent(val queueNum: UUID, val componentName: String): FXEvent()
 
 class SubscriptionRemoveRequestEvent(val queueNum: UUID): FXEvent()
+
+class EstablishingConnectionStarted : FXEvent()
+
+class EstablishingConnectionStopped : FXEvent()

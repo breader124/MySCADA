@@ -1,5 +1,6 @@
 package elka.achlebos.view
 
+import elka.achlebos.model.EstablishingConnectionStopped
 import elka.achlebos.model.connection.Connection
 import elka.achlebos.viewmodel.ConnectionCreationViewModel
 import javafx.beans.property.SimpleBooleanProperty
@@ -27,6 +28,7 @@ class ConnectionCreationView : View("New connection") {
                 enableWhen(discoverButtonActive)
 
                 action {
+                    discoverButtonActive.value = false
                     model.clearDiscoveredEndpoints()
                     runAsync {
                         model.item = Connection(model.serverUri.value)
@@ -35,6 +37,8 @@ class ConnectionCreationView : View("New connection") {
                         model.discoveredEndpoints.addAll(it)
                     } fail {
                         model.handleDiscoveryException(it)
+                    } finally {
+                        discoverButtonActive.value = true
                     }
                 }
             }
@@ -89,6 +93,7 @@ class ConnectionCreationView : View("New connection") {
                 } fail {
                     model.handleConnectException(it)
                 } finally {
+                    fire(EstablishingConnectionStopped())
                     resetState()
                 }
                 close()

@@ -17,8 +17,8 @@ import java.time.format.DateTimeParseException
 class MainViewModel : ViewModel() {
     init {
         subscribe<ConnectionCreatedEvent> { event ->
-            alert(AlertType.INFORMATION, "Connection created successfully")
             ServerManager.addServer(Server(event.name, event.opcUaClient))
+            alert(AlertType.INFORMATION, "Connection created successfully")
         }
     }
 
