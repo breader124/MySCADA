@@ -15,6 +15,7 @@ import elka.achlebos.viewmodel.AddressSpaceFragmentModel
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
+import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
@@ -30,7 +31,7 @@ class AddressSpaceFragment : Fragment() {
     private var noConnectedServerLabel: Label by singleAssign()
     private val noChosenServerLabel = label("There is no chosen server")
     private val connectingInProgressLabel = label("Connecting to chosen server in progress...")
-    private var previousLabel: Label? = null
+    private var previousLabel: Node? = null
 
     private val connectedServers: ObservableList<Server> = ServerManager.CONNECTED
     private val selectedServer = SimpleObjectProperty<Server?>()
@@ -65,12 +66,14 @@ class AddressSpaceFragment : Fragment() {
         }
 
         subscribe<EstablishingConnectionStarted> {
-            previousLabel = serverTreeBorderPane.center as Label?
+            previousLabel = serverTreeBorderPane.center
             serverTreeBorderPane.center = connectingInProgressLabel
         }
 
         subscribe<EstablishingConnectionStopped> {
-            if (serverTreeBorderPane.center == connectingInProgressLabel) {
+            if (connectedServers.isNotEmpty() && previousLabel == noConnectedServerLabel) {
+                serverTreeBorderPane.center = noChosenServerLabel
+            } else {
                 serverTreeBorderPane.center = previousLabel
             }
         }
